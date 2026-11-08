@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+.env
+.env*.local
+.netlify
+.vercel
+.DS_Store
+Thumbs.db
+# The original business spreadsheet stays out of GitHub (real people's contact details).
+*.xlsx
+
+# GitHub Desktop once made an empty copy of this folder inside itself; never upload it.
+/tamilto-web/
