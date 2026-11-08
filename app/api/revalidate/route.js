@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { timingSafeEqual } from 'node:crypto'
 
 // The admin panel calls this after every save so changes reach visitors within seconds.
@@ -11,6 +11,8 @@ export async function POST(req) {
   if (!same(req.headers.get('x-revalidate-secret') || '', secret)) return new Response('Unauthorized', { status: 401 })
   const body = await req.json().catch(() => ({}))
   const paths = Array.isArray(body.paths) ? body.paths.filter((p) => typeof p === 'string' && p.startsWith('/')).slice(0, 50) : []
+  // Saved data is re-read on the next visit (business, list, story and event caches).
+  for (const t of ['site', 'articles', 'events']) revalidateTag(t)
   if (!paths.length) revalidatePath('/', 'layout')
   else paths.forEach((p) => revalidatePath(p))
   return Response.json({ revalidated: paths.length ? paths : ['everything'] })

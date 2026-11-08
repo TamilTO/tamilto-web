@@ -43,7 +43,7 @@ export default function HoodView({ raw, nowAt, hoodKey, events }) {
 </div>
 </section>
 <section aria-labelledby="hood-list-h" style={{ maxWidth: "1320px", margin: "0 auto", padding: "36px clamp(16px,4vw,32px) 0" }}>
-<h2 id="hood-list-h" style={{ margin: "0 0 16px", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(36px,4.5vw,54px)", lineHeight: ".95" }}>{hood.count} listed in {hood.n}</h2><A href={hood.allHref} style={{ display: "inline-block", margin: "-6px 0 16px", fontWeight: "800", color: "var(--ink)" }}>See all in the directory →</A>
+<h2 id="hood-list-h" style={{ margin: "0 0 16px", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(36px,4.5vw,54px)", lineHeight: ".95" }}>{hood.count ? `${hood.count} listed in ${hood.n}` : `Listings coming soon to ${hood.n}`}</h2><A href={hood.allHref} style={{ display: "inline-block", margin: "-6px 0 16px", fontWeight: "800", color: "var(--ink)" }}>See all in the directory →</A>
 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,300px),1fr))", gap: "18px" }}>
 {(hoodBiz).map((x, _k3) => (<Fragment key={_k3}>
 <article style={{ position: "relative", display: "flex", flexDirection: "column", borderRadius: "22px", overflow: "hidden", background: "var(--glass)", border: `1px solid ${x.border}`, backdropFilter: "blur(14px) saturate(140%)", WebkitBackdropFilter: "blur(14px) saturate(140%)", boxShadow: x.glow }}>

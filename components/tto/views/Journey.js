@@ -38,6 +38,7 @@ export default function JourneyView({ raw, nowAt, journeyId }) {
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--mariText)", paddingTop: "4px" }}>{st.when}</span>
 <h2 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(32px,4vw,44px)", lineHeight: ".95" }}>{st.t}</h2>
 <p style={{ margin: "0", fontSize: "16px", lineHeight: "1.5", color: "var(--ink2)" }}>{st.d}</p>
+{(!st.vendors.length) && (<p style={{ margin: "4px 0 0", padding: "14px 16px", borderRadius: "18px", border: "1.5px dashed var(--line2)", fontSize: "14px", lineHeight: "1.5", color: "var(--ink2)" }}>We're still picking cousin-approved businesses for this step. Know a good one? <A href="/submit" style={{ color: "var(--ink)", fontWeight: "800" }}>Tell us</A> or <A href="/business" style={{ color: "var(--ink)", fontWeight: "800" }}>list your business</A>.</p>)}
 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,300px),1fr))", gap: "10px", marginTop: "4px" }}>
 {(st.vendors).map((v, _k3) => (<Fragment key={_k3}>
 <div style={{ display: "flex", gap: "12px", alignItems: "center", padding: "10px", borderRadius: "18px", background: "var(--glass)", border: `1.5px solid ${v.planBorder}`, backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>

@@ -35,7 +35,7 @@ export default function EventsView({ raw, events }) {
 </div>
 </section>
 <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "20px clamp(16px,4vw,32px) 0", display: "flex", flexDirection: "column", gap: "14px" }}>
-{(evEmpty) && (<><p style={{ margin: "0", padding: "32px", borderRadius: "22px", border: "1px dashed var(--line2)", textAlign: "center", color: "var(--ink2)" }}>Nothing matches. Try another filter.</p></>)}
+{(evEmpty) && (<><p style={{ margin: "0", padding: "32px", borderRadius: "22px", border: "1px dashed var(--line2)", textAlign: "center", color: "var(--ink2)" }}>{evs.length ? 'Nothing matches. Try another filter.' : (<>No events listed yet. Hosting something? <A href="/submit" style={{ color: "var(--ink)", fontWeight: "800" }}>Submit an event</A>.</>)}</p></>)}
 {(evList).map((e, _k3) => (<Fragment key={_k3}>
 <article style={{ display: "flex", flexWrap: "wrap", gap: "18px", padding: "14px", borderRadius: "24px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
 <div role="img" aria-label={e.t} style={{ flex: "1 1 260px", maxWidth: "100%", aspectRatio: "16/10", borderRadius: "16px", position: "relative", backgroundColor: e.tone, backgroundImage: e.bgImg, backgroundSize: e.bgSize, backgroundPosition: "center" }}>

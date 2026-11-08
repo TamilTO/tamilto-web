@@ -59,12 +59,12 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
   })
 
   const catTiles = site.categories.map((c) => { const l = all.filter((b) => b.category === c.key); return { label: c.label, c: c.colour, href: '/directory?cat=' + c.key, count: l.length, open: l.filter((b) => b.isOpen).length } })
-  const journeyCards = site.journeys.map((j) => ({ ...pic(j), t: j.title, ta: j.tamil, d: j.description, tone: j.tone, href: '/journey/' + j.id, meta: `${j.steps.length} steps · ${new Set(j.steps.flatMap((x) => x.businessIds)).size} businesses` }))
+  const journeyCards = site.journeys.map((j) => ({ ...pic(j), t: j.title, ta: j.tamil, d: j.description, tone: j.tone, href: '/journey/' + j.id, meta: ((n) => `${j.steps.length} steps` + (n ? ` · ${n} business${n === 1 ? '' : 'es'}` : ''))(new Set(j.steps.flatMap((x) => x.businessIds)).size) }))
   const hoodCards = site.neighbourhoods.map((h) => { const l = all.filter((b) => b.neighbourhood === h.key); return { n: h.name, tag: h.tagline, c: h.colour, glow: hexA(h.colour, 0.35), href: '/n/' + h.key, count: l.length, open: l.filter((b) => b.isOpen).length } })
   const collCards = site.collections.map((c) => ({ t: c.title, by: c.curatedBy, d: c.description, href: '/c/' + c.id, count: c.businessIds.length, dots: c.businessIds.slice(0, 5).map((id) => ({ tone: byId[id]?.tone, ...pic(byId[id], '7px 7px') })), wa: 'https://wa.me/?text=' + enc(`${c.title}, on TamilTO:\n` + c.businessIds.map((id) => '• ' + (byId[id]?.name || '')).join('\n') + '\nhttps://tamilto.com/c/' + c.id) }))
   const homeEvents = evs.slice(0, 4)
   const art = (a) => ({ t: a.title, tag: a.sponsored ? 'Sponsored' : (a.tags && a.tags[0]) || a.category, href: articleHref(a), tone: a.hero?.tone, ...pic(a.hero, '9px 9px') })
-  const teasers = [{ t: 'Eat', ta: 'சாப்பாடு', href: '/eat', items: eat.slice(0, 3).map(art) }, { t: 'Culture', ta: 'கலாச்சாரம்', href: '/culture', items: culture.slice(0, 3).map(art) }]
+  const teasers = [{ t: 'Eat', ta: 'சாப்பாடு', href: '/eat', items: eat.slice(0, 3).map(art) }, { t: 'Culture', ta: 'கலாச்சாரம்', href: '/culture', items: culture.slice(0, 3).map(art) }].filter((x) => x.items.length)
 
   const news = { ...NEWS, hasSponsor: !!NEWS.sponsor, notDone: !nl.done, done: nl.done }
   const nlSubmit = async (e) => {
@@ -101,7 +101,7 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 </Fragment>))}
 </div>
 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 22px", fontSize: "14px", fontWeight: "700", color: "var(--ink2)" }}>
-<span style={{ whiteSpace: "nowrap" }}><strong style={{ color: "var(--ink)", fontSize: "18px" }}>{stats.biz}</strong> <span>Tamil businesses</span></span>
+{(stats.biz > 0) ? (<span style={{ whiteSpace: "nowrap" }}><strong style={{ color: "var(--ink)", fontSize: "18px" }}>{stats.biz}</strong> <span>Tamil businesses</span></span>) : (<span style={{ whiteSpace: "nowrap" }}>New listings going live every week</span>)}
 <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap" }}><span style={{ width: "8px", height: "8px", borderRadius: "99px", background: "var(--green)" }}></span><strong style={{ color: "var(--ink)", fontSize: "18px" }}>{stats.cats}</strong> categories</span>
 <span style={{ whiteSpace: "nowrap" }}><strong style={{ color: "var(--ink)", fontSize: "18px" }}>{stats.hoods}</strong> areas</span>
 </div>
@@ -145,7 +145,7 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 {(catTiles).map((c, _k5) => (<Fragment key={_k5}>
 <A href={c.href} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "22px", minHeight: "132px", padding: "16px", borderRadius: "20px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", textDecoration: "none", color: "var(--ink)", transition: "transform .25s ease,border-color .25s ease,box-shadow .25s ease" }} className="x2">
 <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><span style={{ width: "30px", height: "6px", borderRadius: "99px", background: c.c }}></span><span style={{ width: "6px", height: "6px", borderRadius: "99px", background: c.c, opacity: ".6" }}></span></span>
-<span style={{ display: "flex", flexDirection: "column", gap: "3px" }}><strong style={{ fontSize: "17px", lineHeight: "1.2" }}>{c.label}</strong><span style={{ fontSize: "13px", color: "var(--ink2)", fontWeight: "600" }}>{c.count} listed</span></span>
+<span style={{ display: "flex", flexDirection: "column", gap: "3px" }}><strong style={{ fontSize: "17px", lineHeight: "1.2" }}>{c.label}</strong><span style={{ fontSize: "13px", color: "var(--ink2)", fontWeight: "600" }}>{c.count ? `${c.count} listed` : 'Coming soon'}</span></span>
 </A>
 </Fragment>))}
 </div>
@@ -178,11 +178,12 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 <span style={{ width: "40px", height: "6px", borderRadius: "99px", background: h.c }}></span>
 <strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "40px", lineHeight: ".95" }}>{h.n}</strong>
 <span style={{ fontSize: "15px", color: "var(--ink2)", fontWeight: "600" }}>{h.tag}</span>
-<span style={{ fontSize: "13px", fontWeight: "800" }}>{h.count} businesses</span>
+<span style={{ fontSize: "13px", fontWeight: "800" }}>{h.count ? `${h.count} businesses` : 'Coming soon'}</span>
 </A>
 </Fragment>))}
 </div>
 </section>
+{(collCards.length > 0) && (<>
 <section aria-labelledby="coll-h" style={{ maxWidth: "1320px", margin: "0 auto", padding: "64px clamp(16px,4vw,32px) 0" }}>
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--mariText)" }}>Cousin-approved</span>
 <h2 id="coll-h" style={{ margin: "8px 0 18px", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(38px,5vw,60px)", lineHeight: ".92" }}>Lists your group chat will steal.</h2>
@@ -203,6 +204,8 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 </Fragment>))}
 </div>
 </section>
+</>)}
+{(homeEvents.length > 0) && (<>
 <section aria-labelledby="ev-h" style={{ maxWidth: "1320px", margin: "0 auto", padding: "64px clamp(16px,4vw,32px) 0" }}>
 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "end", gap: "8px 20px", marginBottom: "18px" }}>
 <h2 id="ev-h" style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(38px,5vw,60px)", lineHeight: ".92" }}>Coming up</h2>
@@ -222,6 +225,8 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 </Fragment>))}
 </div>
 </section>
+</>)}
+{(teasers.length > 0) && (<>
 <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "64px clamp(16px,4vw,32px) 0", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,420px),1fr))", gap: "16px" }}>
 {(teasers).map((x, _k11) => (<Fragment key={_k11}>
 <div style={{ display: "flex", flexDirection: "column", gap: "14px", padding: "24px", borderRadius: "24px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
@@ -236,6 +241,7 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
 </div>
 </Fragment>))}
 </section>
+</>)}
 
 
 

@@ -111,7 +111,7 @@ const Wordmark = ({ size = 30, slit = false }) => (
   </span>
 )
 
-const NAV = [['Directory', '/directory', ['/directory', '/b/', '/n/', '/c/', '/journey']], ['Life moments', '/journey/wedding', []], ['Events', '/events', ['/events']], ['Eat', '/eat', ['/eat']], ['Culture', '/culture', ['/culture', '/people', '/guides']]]
+const NAV = [['Directory', '/directory', ['/directory', '/b/', '/n/', '/c/', '/journey']], ['Life moments', '/journey', []], ['Events', '/events', ['/events']], ['Eat', '/eat', ['/eat']], ['Culture', '/culture', ['/culture', '/people', '/guides']]]
 
 export function Header() {
   const app = useApp()
@@ -166,7 +166,7 @@ export function Footer() {
           <Link href="/business" style={{ minHeight: 48, display: 'inline-flex', alignItems: 'center', padding: '0 22px', borderRadius: 999, background: 'var(--mari)', color: '#1A1410', fontWeight: 800, textDecoration: 'none' }}>List your business, free</Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,160px),1fr))', gap: 22, borderTop: '1px solid var(--line)', paddingTop: 22 }}>
-          <div style={col}><strong style={fh}>Find</strong><Link href="/directory" style={fl}>Directory</Link><Link href="/directory?view=map" style={fl}>Live map</Link><Link href="/journey/wedding" style={fl}>Wedding planner</Link></div>
+          <div style={col}><strong style={fh}>Find</strong><Link href="/directory" style={fl}>Directory</Link><Link href="/directory?view=map" style={fl}>Live map</Link><Link href="/journey" style={fl}>Life moments</Link></div>
           <div style={col}><strong style={fh}>Read</strong><Link href="/eat" style={fl}>Eat</Link><Link href="/events" style={fl}>Events</Link><Link href="/culture" style={fl}>Culture</Link><Link href="/submit" style={fl}>Submit a tip</Link></div>
           <div style={col}><strong style={fh}>Businesses</strong><Link href="/business#claim" style={fl}>Claim your listing</Link><Link href="/business#pricing" style={fl}>Pricing</Link><Link href="/advertise" style={fl}>Advertise</Link></div>
           <div style={col}><strong style={fh}>TamilTO</strong><Link href="/about" style={fl}>About</Link><Link href="/editorial-policy" style={fl}>Editorial policy</Link><a href="mailto:hello@tamilto.com" style={fl}>hello@tamilto.com</a></div>
