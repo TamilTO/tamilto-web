@@ -4,7 +4,8 @@ import Embed from './Embed'
 
 const mapsUrl = (it) =>
   it.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([it.name, it.address, it.neighbourhood, 'ON'].filter(Boolean).join(' '))}`
-const media = (img, tone) => ({ image: img?.asset ? img : null, alt: img?.alt, tone: img?.tone || tone })
+// Photos added in the admin carry a full web address in `url`; older sample blocks only have a colour.
+const media = (img, tone) => ({ url: img?.url || '', alt: img?.alt || img?.caption || '', tone: img?.tone || tone || '#1F4E5F' })
 
 const components = {
   block: {

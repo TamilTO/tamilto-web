@@ -1,0 +1,333 @@
+'use client'
+// TamilTO Admin v3 layout, converted from "TamilTO Admin v3.dc.html" (Claude Design).
+// Pure markup: every value and action comes from the view model built in AdminV3.js.
+import { Fragment } from 'react'
+
+export default function View(v) {
+  const { saving, saveLabel, addMember, addSlide, addStep, authed, autoOn, canCreate, cancelDel, cards, catOpts, changePw, closeEdit, countText, create, createLabel, doCsv, doExport, editing, email, fcat, fflag, fhood, forgot, formErr, formFields, formTitle, hasFormErr, hasLoginErr, hasPages, hasResetMsg, hasToast, hoodOpts, ibCount, ibEmpty, ibExport, ibIntro, ibKinds, ibList, ibRefresh, ibShowKinds, ibStatus, ibTitle, isArtTab, isBizForm, isBizTab, isCollForm, isData, isInbox, isJourneyForm, isList, isOverview, isOwner, isStats, isStoryForm, isStoryTab, isTeam, jSteps, listTitle, liveDot, liveText, loadErr, logItems, login, loginErr, logout, myEmail, myRole, navGroups, newEmail, newName, newPw, newRole, nextDis, nextPage, noLog, noPickSel, noRows, noSlides, noSteps, notAdminText, notUploading, onAuto, onEmail, onFcat, onFflag, onFhood, onFiles, onNewEmail, onNewName, onNewPw, onNewRole, onPass, onPick, onQ, pageText, pass, photoColor, photoCount, photoHint, photoLabel, photos, pick, pickRes, pickSel, prevDis, prevPage, q, quick, readOnly, resetMsg, rows, sSlides, save, saveNewPw, secChips, showApp, showLoadErr, showLoading, showLogin, showNewPw, showNotAdmin, siteHref, statsText, statsTitle, team, themeIcon, themeLabel, toast, toggleTheme, uploading } = v
+  return (
+    <>
+<div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "radial-gradient(1200px 600px at 85% -10%,rgba(255,94,115,.10),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(94,194,209,.08),transparent 60%),var(--bg)" }}>
+<header style={{ position: "sticky", top: "0", zIndex: "40", background: "var(--glass)", backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", borderBottom: "1px solid var(--line)" }}>
+<div style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 clamp(12px,3vw,32px)", height: "64px", display: "flex", alignItems: "center", gap: "10px" }}>
+<span style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "28px", lineHeight: "1", display: "inline-flex", alignItems: "baseline", whiteSpace: "nowrap" }}><span>Tamil</span><svg viewBox="0 -42 64 142" aria-hidden="true" style={{ height: "1.18em", width: ".53em", overflow: "visible", margin: "0 .015em 0 .035em", color: "var(--red)" }}><path fill="currentColor" d="M31 -42H33L34.2 -10H29.8Z M29.5 -4H34.5V0H29.5Z M9.5 0H54.5A9.5 9.5 0 0 1 54.5 19H9.5A9.5 9.5 0 0 1 9.5 0Z M15 19H49L46 26H18Z M23 26H41L45 100H19Z" /><path fill="var(--mari)" d="M29 -12H35Q37 -12 37 -10V-6Q37 -4 35 -4H29Q27 -4 27 -6V-10Q27 -12 29 -12Z" /></svg><span style={{ color: "var(--red)" }}>O</span></span>
+<span style={{ padding: "4px 10px", borderRadius: "999px", background: "var(--mari)", color: "#1A1410", fontSize: "12px", fontWeight: "800", letterSpacing: ".1em", textTransform: "uppercase" }}>Admin</span>
+<span style={{ flex: "1" }}></span>
+<a href={siteHref} target="_blank" rel="noopener" style={{ minHeight: "40px", display: "inline-flex", alignItems: "center", padding: "0 14px", borderRadius: "999px", border: "1px solid var(--line2)", color: "var(--ink)", fontWeight: "800", fontSize: "14px", textDecoration: "none", whiteSpace: "nowrap" }}>View site ↗</a>
+<button type="button" onClick={toggleTheme} aria-label={themeLabel} style={{ width: "40px", height: "40px", flexShrink: "0", borderRadius: "999px", border: "1px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", cursor: "pointer", fontSize: "16px" }}>{themeIcon}</button>
+{(authed) && (<><button type="button" onClick={logout} style={{ minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>Log out</button></>)}
+</div>
+</header>
+{(showLogin) && (<>
+<main style={{ flex: "1", display: "grid", placeItems: "center", padding: "40px 16px" }}>
+<form onSubmit={login} style={{ width: "min(100%,420px)", padding: "clamp(22px,5vw,36px)", borderRadius: "28px", background: "var(--glass2)", border: "1px solid var(--line2)", boxShadow: "var(--shadow)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", display: "flex", flexDirection: "column", gap: "14px" }}>
+<span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--mariText)" }}>Team login</span>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "52px", lineHeight: ".9" }}>Vanakkam, editor.</h1>
+<p style={{ margin: "0", color: "var(--ink2)", lineHeight: "1.5" }}>Sign in to edit businesses, events, articles and lists. Changes go live on the site within seconds of saving.</p>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>Email<input type="email" autoComplete="username" required={true} value={email} onChange={onEmail} style={{ minHeight: "50px", padding: "0 16px", borderRadius: "14px", border: "1.5px solid var(--line2)", background: "var(--glass)", color: "var(--ink)", fontSize: "16px" }} /></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>Password<input type="password" autoComplete="current-password" required={true} value={pass} onChange={onPass} style={{ minHeight: "50px", padding: "0 16px", borderRadius: "14px", border: "1.5px solid var(--line2)", background: "var(--glass)", color: "var(--ink)", fontSize: "16px" }} /></label>
+{(hasLoginErr) && (<><span role="alert" style={{ color: "var(--red)", fontWeight: "700" }}>{loginErr}</span></>)}
+<button type="submit" style={{ minHeight: "52px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", fontSize: "16px", cursor: "pointer" }}>Sign in</button>
+<button type="button" onClick={forgot} style={{ alignSelf: "center", minHeight: "40px", padding: "0 12px", border: "0", background: "transparent", color: "var(--ink2)", fontWeight: "700", fontSize: "14px", textDecoration: "underline", cursor: "pointer" }}>Forgot password?</button>
+{(hasResetMsg) && (<><span role="status" style={{ fontSize: "13px", color: "var(--ink2)", padding: "10px 12px", borderRadius: "12px", border: "1px dashed var(--line2)" }}>{resetMsg}</span></>)}
+</form>
+</main>
+</>)}
+{(showNewPw) && (<>
+<main style={{ flex: "1", display: "grid", placeItems: "center", padding: "40px 16px" }}>
+<form onSubmit={saveNewPw} style={{ width: "min(100%,420px)", padding: "clamp(22px,5vw,36px)", borderRadius: "28px", background: "var(--glass2)", border: "1px solid var(--line2)", boxShadow: "var(--shadow)", display: "flex", flexDirection: "column", gap: "14px" }}>
+<span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--mariText)" }}>Password reset</span>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "52px", lineHeight: ".9" }}>Pick a new password.</h1>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>New password<input type="password" autoComplete="new-password" value={newPw} onChange={onNewPw} style={{ minHeight: "50px", padding: "0 16px", borderRadius: "14px", border: "1.5px solid var(--line2)", background: "var(--glass)", color: "var(--ink)", fontSize: "16px" }} /></label>
+<span style={{ fontSize: "13px", color: "var(--ink2)" }}>At least 10 characters. Save it in Bitwarden.</span>
+{(hasLoginErr) && (<><span role="alert" style={{ color: "var(--red)", fontWeight: "700" }}>{loginErr}</span></>)}
+<button type="submit" style={{ minHeight: "52px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", fontSize: "16px", cursor: "pointer" }}>Save password</button>
+</form>
+</main>
+</>)}
+{(showNotAdmin) && (<><main style={{ flex: "1", display: "grid", placeItems: "center", padding: "24px" }}><div style={{ maxWidth: "460px", textAlign: "center", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}><h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "44px", lineHeight: ".95" }}>Not on the team list</h1><p style={{ margin: "0", color: "var(--ink2)", lineHeight: "1.5" }}>{notAdminText}</p><button type="button" onClick={logout} style={{ minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", cursor: "pointer" }}>Log out</button></div></main></>)}
+{(showLoading) && (<><main style={{ flex: "1", display: "grid", placeItems: "center", color: "var(--ink2)", fontWeight: "700" }}>Loading site content…</main></>)}
+{(showLoadErr) && (<><main style={{ flex: "1", display: "grid", placeItems: "center", padding: "24px" }}><p role="alert" style={{ maxWidth: "520px", textAlign: "center", color: "var(--red)", fontWeight: "700" }}>Couldn't read the site's content: {loadErr}</p></main></>)}
+{(showApp) && (<>
+<main style={{ flex: "1", width: "100%", maxWidth: "1480px", margin: "0 auto", padding: "22px clamp(12px,3vw,32px) 56px", display: "flex", flexWrap: "wrap", gap: "24px", alignItems: "flex-start" }}>
+<aside aria-label="Admin sections" style={{ flex: "1 1 250px", maxWidth: "100%", position: "sticky", top: "76px", alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: "18px", padding: "14px", borderRadius: "24px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", maxHeight: "calc(100vh - 92px)", overflowY: "auto" }}>
+{(navGroups).map((g, _k1) => (<Fragment key={_k1}>
+<nav aria-label={g.title} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+<span style={{ padding: "2px 10px 6px", fontSize: "11px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--ink2)" }}>{g.title}</span>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: "4px" }}>
+{(g.items).map((t, _k2) => (<Fragment key={_k2}>
+<button type="button" onClick={t.onClick} aria-current={t.cur} style={{ display: "flex", alignItems: "center", gap: "10px", minHeight: "52px", padding: "6px 12px", borderRadius: "14px", border: "0", background: t.bg, color: t.fg, textAlign: "left", cursor: "pointer", width: "100%" }}>
+<span style={{ width: "10px", height: "10px", borderRadius: "99px", background: t.dot, flexShrink: "0" }}></span>
+<span style={{ flex: "1", minWidth: "0", display: "flex", flexDirection: "column" }}><strong style={{ fontSize: "15px", lineHeight: "1.2" }}>{t.label}</strong><span data-hint="1" style={{ fontSize: "12px", lineHeight: "1.3", opacity: ".78", fontWeight: "600" }}>{t.hint}</span></span>
+{(t.hasCount) && (<><span style={{ minWidth: "28px", padding: "2px 8px", borderRadius: "99px", background: t.pillBg, fontSize: "12px", fontWeight: "800", textAlign: "center" }}>{t.count}</span></>)}
+</button>
+</Fragment>))}
+</div>
+</nav>
+</Fragment>))}
+<div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "12px", borderRadius: "16px", border: "1px solid var(--line)" }}>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "13px", fontWeight: "700", color: "var(--ink2)" }}><span style={{ width: "9px", height: "9px", borderRadius: "99px", background: liveDot }}></span>{liveText}</span>
+<a href={siteHref} target="_blank" rel="noopener" style={{ minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: "999px", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", fontSize: "14px", textDecoration: "none" }}>View live website ↗</a>
+</div>
+</aside>
+<div style={{ flex: "4 1 640px", minWidth: "0", display: "flex", flexDirection: "column", gap: "16px" }}>
+{(readOnly) && (<><p style={{ margin: "0", padding: "10px 14px", borderRadius: "14px", border: "1px solid var(--line2)", background: "var(--glass2)", fontSize: "14px", fontWeight: "600" }}>You have a sales login: you can see everything, but saving is switched off.</p></>)}
+{(isOverview) && (<>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "end", gap: "10px 20px" }}>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>Overview</h1>
+<span style={{ flex: "1" }}></span>
+<span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "700", color: "var(--ink2)" }}><span style={{ width: "9px", height: "9px", borderRadius: "99px", background: liveDot }}></span>{liveText}</span>
+</div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,180px),1fr))", gap: "12px" }}>
+{(cards).map((c, _k3) => (<Fragment key={_k3}><button type="button" onClick={c.go} style={{ textAlign: "left", padding: "18px", borderRadius: "20px", background: "var(--glass)", border: "1px solid var(--line)", color: "var(--ink)", cursor: "pointer", display: "flex", flexDirection: "column", gap: "4px", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}><span style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink2)" }}>{c.l}</span><strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "46px", lineHeight: "1" }}>{c.v}</strong><span style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink2)" }}>{c.d}</span></button></Fragment>))}
+</div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,380px),1fr))", gap: "12px", alignItems: "start" }}>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<h2 style={{ margin: "0", fontSize: "13px", fontWeight: "800", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink2)" }}>Quick actions</h2>
+<div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>{(quick).map((q, _k4) => (<Fragment key={_k4}><button type="button" onClick={q.go} style={{ minHeight: "44px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap" }}>{q.l}</button></Fragment>))}</div>
+</section>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "6px" }}>
+<h2 style={{ margin: "0 0 4px", fontSize: "13px", fontWeight: "800", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--ink2)" }}>Recent changes</h2>
+{(noLog) && (<><span style={{ color: "var(--ink2)" }}>Nothing published yet. The site is showing its original content.</span></>)}
+{(logItems).map((l, _k5) => (<Fragment key={_k5}><div style={{ display: "flex", gap: "12px", padding: "8px 0", borderTop: "1px solid var(--line)", fontSize: "14px" }}><span style={{ flex: "1", minWidth: "0", fontWeight: "600" }}>{l.m}</span><span style={{ color: "var(--ink2)", whiteSpace: "nowrap" }}>{l.t}</span></div></Fragment>))}
+</section>
+</div>
+</>)}
+{(isList) && (<>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "end", gap: "10px 16px" }}>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>{listTitle}</h1>
+<span style={{ fontWeight: "700", color: "var(--ink2)", paddingBottom: "6px" }}>{countText}</span>
+<span style={{ flex: "1" }}></span>
+{(canCreate) && (<><button type="button" onClick={create} style={{ minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", cursor: "pointer", whiteSpace: "nowrap" }}>+ {createLabel}</button></>)}
+</div>
+{(isBizTab) && (<>
+<div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+<input type="search" value={q} onChange={onQ} placeholder="Search name, address, phone, email…" aria-label="Search businesses" style={{ flex: "1 1 260px", minHeight: "46px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} />
+<select value={fcat} onChange={onFcat} aria-label="Category" style={{ flex: "0 1 220px", minHeight: "46px", padding: "0 12px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }}><option value="">All categories</option>{(catOpts).map((o, _k6) => (<Fragment key={_k6}><option value={o.v}>{o.l}</option></Fragment>))}</select>
+<select value={fhood} onChange={onFhood} aria-label="Area" style={{ flex: "0 1 180px", minHeight: "46px", padding: "0 12px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }}><option value="">All areas</option>{(hoodOpts).map((o, _k7) => (<Fragment key={_k7}><option value={o.v}>{o.l}</option></Fragment>))}</select>
+<select value={fflag} onChange={onFflag} aria-label="Status" style={{ flex: "0 1 180px", minHeight: "46px", padding: "0 12px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }}><option value="all">Any status</option><option value="feat">Featured</option><option value="ver">Verified</option><option value="hidden">Hidden</option><option value="nophone">No phone number</option><option value="nophotos">Needs photos</option><option value="nosocial">No social links</option></select>
+</div>
+</>)}
+{(isStoryTab) && (<><label style={{ display: "flex", gap: "10px", alignItems: "center", padding: "12px 16px", borderRadius: "14px", border: "1px solid var(--line2)", background: "var(--glass)", fontWeight: "700", fontSize: "15px", cursor: "pointer" }}><input type="checkbox" checked={autoOn} onChange={onAuto} style={{ width: "20px", height: "20px" }} />Also show automatic stories (built from lists and upcoming events) after my own</label></>)}
+{(isArtTab) && (<>
+<div role="group" aria-label="Section" style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>{(secChips).map((c, _k8) => (<Fragment key={_k8}><button type="button" onClick={c.onClick} aria-pressed={c.sel} style={{ minHeight: "40px", padding: "0 16px", borderRadius: "999px", border: `1.5px solid ${c.border}`, background: c.bg, color: c.fg, fontWeight: "800", fontSize: "14px", cursor: "pointer" }}>{c.label}</button></Fragment>))}<span style={{ alignSelf: "center", fontSize: "13px", color: "var(--ink2)", paddingLeft: "6px" }}>The first Culture article is the big feature on the Culture page.</span></div>
+</>)}
+<div style={{ borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", overflow: "hidden" }}>
+{(noRows) && (<><p style={{ margin: "0", padding: "28px", textAlign: "center", color: "var(--ink2)" }}>Nothing here yet.</p></>)}
+{(rows).map((r, _k9) => (<Fragment key={_k9}>
+<div style={{ display: "flex", flexWrap: "wrap", gap: "10px 14px", alignItems: "center", padding: "12px 16px", borderTop: "1px solid var(--line)", opacity: r.dim }}>
+<span style={{ width: "6px", alignSelf: "stretch", minHeight: "36px", borderRadius: "99px", background: r.c, flexShrink: "0" }}></span>{(r.hasThumb) && (<><span aria-hidden="true" style={{ width: "52px", height: "52px", borderRadius: "12px", flexShrink: "0", backgroundColor: "var(--line)", backgroundImage: r.thumbBg, backgroundSize: "cover", backgroundPosition: "center" }}></span></>)}
+<div style={{ flex: "1 1 260px", minWidth: "0", display: "flex", flexDirection: "column", gap: "3px" }}>
+<strong style={{ fontSize: "16px", lineHeight: "1.25" }}>{r.title}</strong>
+<span style={{ fontSize: "13px", color: "var(--ink2)", overflowWrap: "anywhere" }}>{r.sub}</span>
+{(r.hasBadges) && (<><span style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "2px" }}>{(r.badges).map((b, _k10) => (<Fragment key={_k10}><span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".06em", textTransform: "uppercase", padding: "3px 8px", borderRadius: "6px", border: `1.5px solid ${b.c}`, color: "var(--ink)" }}>{b.l}</span></Fragment>))}</span></>)}
+</div>
+<div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+{(r.canMove) && (<><button type="button" onClick={r.up} disabled={r.upDis} aria-label="Move up" style={{ width: "40px", height: "40px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↑</button><button type="button" onClick={r.down} disabled={r.downDis} aria-label="Move down" style={{ width: "40px", height: "40px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↓</button></>)}
+{(r.hasView) && (<><a href={r.view} target="_blank" rel="noopener" style={{ minHeight: "40px", display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: "999px", color: "var(--ink2)", fontWeight: "700", fontSize: "14px" }}>View</a></>)}
+{(r.canEdit) && (<><button type="button" onClick={r.edit} style={{ minHeight: "40px", padding: "0 16px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", fontSize: "14px", cursor: "pointer" }}>{r.editLabel}</button></>)}
+{(r.canDel) && (<>
+{(r.notConfirming) && (<><button type="button" onClick={r.askDel} style={{ minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer" }}>Delete</button></>)}
+{(r.confirming) && (<><button type="button" onClick={r.del} style={{ minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", fontSize: "14px", cursor: "pointer" }}>Confirm delete</button><button type="button" onClick={cancelDel} style={{ minHeight: "40px", padding: "0 12px", borderRadius: "999px", border: "0", background: "transparent", color: "var(--ink2)", fontWeight: "700", fontSize: "14px", cursor: "pointer" }}>Cancel</button></>)}
+</>)}
+</div>
+</div>
+</Fragment>))}
+</div>
+{(hasPages) && (<>
+<div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+<button type="button" onClick={prevPage} disabled={prevDis} style={{ minHeight: "44px", padding: "0 18px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>← Prev</button>
+<span style={{ fontWeight: "700", color: "var(--ink2)" }}>{pageText}</span>
+<button type="button" onClick={nextPage} disabled={nextDis} style={{ minHeight: "44px", padding: "0 18px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>Next →</button>
+</div>
+</>)}
+</>)}
+{(isStats) && (<>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "end", gap: "10px 14px" }}>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>{statsTitle}</h1>
+</div>
+<div style={{ padding: "18px", borderRadius: "20px", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", display: "flex", flexDirection: "column", gap: "10px", maxWidth: "720px" }}>
+<strong style={{ fontSize: "18px" }}>No activity recorded yet</strong>
+<span style={{ color: "var(--ink2)", lineHeight: "1.55" }}>{statsText}</span>
+</div>
+</>)}
+
+{(isInbox) && (<>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "end", gap: "10px 16px" }}>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>{ibTitle}</h1>
+<span style={{ fontWeight: "700", color: "var(--ink2)", paddingBottom: "6px" }}>{ibCount}</span><span style={{ flex: "1" }}></span>
+<div role="group" aria-label="Status" style={{ display: "flex", border: "1.5px solid var(--line2)", borderRadius: "999px", overflow: "hidden", background: "var(--glass2)" }}>{(ibStatus).map((c, _k26) => (<Fragment key={_k26}><button type="button" onClick={c.onClick} aria-pressed={c.sel} style={{ whiteSpace: "nowrap", minHeight: "42px", padding: "0 16px", border: "0", background: c.bg, color: c.fg, fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>{c.l}</button></Fragment>))}</div>
+<button type="button" onClick={ibRefresh} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Refresh</button><button type="button" onClick={ibExport} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Export CSV</button>
+</div>
+<p style={{ margin: "0", fontSize: "14px", color: "var(--ink2)", lineHeight: "1.5", maxWidth: "820px" }}>{ibIntro}</p>
+{(ibShowKinds) && (<><div role="group" aria-label="Type" style={{ display: "flex", gap: "8px", overflowX: "auto", scrollbarWidth: "none", padding: "2px 0" }}>{(ibKinds).map((c, _k27) => (<Fragment key={_k27}><button type="button" onClick={c.onClick} aria-pressed={c.sel} style={{ flexShrink: "0", whiteSpace: "nowrap", minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "1px solid var(--line2)", background: c.bg, color: c.fg, fontWeight: "700", fontSize: "13px", cursor: "pointer" }}>{c.l}</button></Fragment>))}</div></>)}
+{(ibEmpty) && (<><div style={{ padding: "28px", borderRadius: "20px", border: "1px dashed var(--line2)", textAlign: "center", color: "var(--ink2)" }}>Nothing here. New submissions from the website appear automatically. Press Refresh if the site is open in another tab.</div></>)}
+<div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+{(ibList).map((y, _k28) => (<Fragment key={_k28}>
+<article style={{ padding: "16px 18px", borderRadius: "20px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 12px" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".12em", textTransform: "uppercase", color: "var(--mariText)" }}>{y.kind}</span><strong style={{ flex: "1 1 220px", fontSize: "17px" }}>{y.title}</strong><span style={{ fontSize: "13px", color: "var(--ink2)" }}>{y.when}</span><span style={{ padding: "4px 10px", borderRadius: "999px", background: y.sBg, color: y.sFg, fontSize: "12px", fontWeight: "800" }}>{y.status}</span></div>
+<dl style={{ margin: "0", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,220px),1fr))", gap: "6px 16px" }}>{(y.lines).map((l, _k29) => (<Fragment key={_k29}><div style={{ minWidth: "0" }}><dt style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink2)" }}>{l.k}</dt><dd style={{ margin: "2px 0 0", fontSize: "14px", overflowWrap: "anywhere" }}>{l.v}</dd></div></Fragment>))}</dl>
+{(y.hasVendors) && (<><div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", padding: "10px 12px", borderRadius: "14px", background: "var(--glass2)", border: "1px solid var(--line)" }}><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ink2)" }}>Forward to vendor</span>{(y.vendorLinks).map((vl, _k30) => (<Fragment key={_k30}>{(vl.has) && (<><a href={vl.wa} target="_blank" rel="noopener" style={{ minHeight: "38px", display: "inline-flex", alignItems: "center", padding: "0 14px", borderRadius: "999px", background: "#1F7A4D", color: "#fff", fontWeight: "800", fontSize: "13px", textDecoration: "none", whiteSpace: "nowrap" }}>{vl.n} ↗</a></>)}{(vl.no) && (<><span style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink2)" }}>{vl.n} (no phone)</span></>)}</Fragment>))}</div></>)}
+<div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+{(y.canApprove) && (<><button type="button" onClick={y.approve} style={{ minHeight: "42px", padding: "0 18px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", fontSize: "14px", cursor: "pointer" }}>Approve & publish</button></>)}
+{(y.canReject) && (<><button type="button" onClick={y.reject} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Reject</button></>)}
+{(y.canCycle) && (<><button type="button" onClick={y.cycle} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>{y.cycleLabel}</button></>)}
+{(y.hasWa) && (<><a href={y.wa} target="_blank" rel="noopener" style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center", borderColor: "#1F7A4D" }}>WhatsApp</a></>)}
+{(y.hasMail) && (<><a href={y.mail} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>Email</a></>)}
+<span style={{ flex: "1" }}></span>
+<button type="button" onClick={y.del} style={{ minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "14px", cursor: "pointer", whiteSpace: "nowrap", textDecoration: "none", display: "inline-flex", alignItems: "center", color: "var(--red)" }}>Delete</button>
+</div>
+</article>
+</Fragment>))}
+</div>
+</>)}
+{(isTeam) && (<>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>Team & login</h1>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,340px),1fr))", gap: "12px", alignItems: "start" }}>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "30px" }}>Who can sign in</strong>
+{(team).map((m, _km) => (<Fragment key={_km}><div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", padding: "10px 0", borderTop: "1px solid var(--line)" }}><span style={{ flex: "1 1 180px", minWidth: "0" }}><strong style={{ display: "block", overflowWrap: "anywhere" }}>{m.n}</strong><span style={{ fontSize: "13px", color: "var(--ink2)" }}>{m.sub}</span></span>{(m.canChange) && (<><select aria-label={"Role for " + m.n} value={m.role} onChange={m.onRole} style={{ minHeight: "40px", padding: "0 10px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }}><option value="owner">Owner</option><option value="editor">Editor</option><option value="sales">Sales (view only)</option></select>{(m.notConfirming) && (<><button type="button" onClick={m.askDel} style={{ minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--red)", fontWeight: "800", cursor: "pointer" }}>Remove</button></>)}{(m.confirming) && (<><button type="button" onClick={m.del} style={{ minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", cursor: "pointer" }}>Confirm remove</button></>)}</>)}{(m.fixed) && (<><span style={{ padding: "4px 10px", borderRadius: "999px", background: "var(--line)", fontSize: "12px", fontWeight: "800" }}>{m.roleLabel}</span></>)}</div></Fragment>))}
+{(isOwner) && (<><form onSubmit={addMember} style={{ display: "flex", flexDirection: "column", gap: "8px", paddingTop: "12px", borderTop: "1px solid var(--line)" }}><strong>Add a team member</strong><span style={{ fontSize: "13px", color: "var(--ink2)", lineHeight: "1.5" }}>First create their login in Supabase: Authentication → Users → Add user. Then add their email here.</span><input type="email" required={true} value={newEmail} onChange={onNewEmail} placeholder="their@email.com" aria-label="Their email" style={{ minHeight: "46px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }} /><input value={newName} onChange={onNewName} placeholder="Name (optional)" aria-label="Their name" style={{ minHeight: "46px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }} /><select value={newRole} onChange={onNewRole} aria-label="Role" style={{ minHeight: "46px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }}><option value="editor">Editor: can add and change everything</option><option value="sales">Sales: can see everything, change nothing</option><option value="owner">Owner: everything, plus the team</option></select><button type="submit" style={{ alignSelf: "flex-start", minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", cursor: "pointer" }}>Add to team</button></form></>)}
+</section>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "30px" }}>Your password</strong>
+<span style={{ color: "var(--ink2)", lineHeight: "1.5" }}>Signed in as {myEmail} ({myRole}). Use a long password and keep it in Bitwarden. Never send it by email or chat.</span>
+<form onSubmit={changePw} style={{ display: "flex", flexDirection: "column", gap: "8px" }}><input type="password" autoComplete="new-password" value={newPw} onChange={onNewPw} placeholder="New password (10+ characters)" aria-label="New password" style={{ minHeight: "46px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }} /><button type="submit" style={{ alignSelf: "flex-start", minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", cursor: "pointer" }}>Change password</button></form>
+</section>
+</div>
+</>)}
+{(isData) && (<>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(40px,6vw,64px)", lineHeight: ".9" }}>Data & backup</h1>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))", gap: "12px", alignItems: "start" }}>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "30px" }}>Export</strong>
+<span style={{ color: "var(--ink2)", lineHeight: "1.5" }}>Download everything (businesses, photos list, events, articles, lists, life moments, areas and site content) as one file. Keep a copy before big changes.</span>
+<button type="button" onClick={doExport} style={{ alignSelf: "flex-start", minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", cursor: "pointer" }}>Download backup</button>
+</section>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "30px" }}>Spreadsheet</strong>
+<span style={{ color: "var(--ink2)", lineHeight: "1.5" }}>Every business with its contact details, area, photos and status, as a CSV file that opens in Excel or Google Sheets.</span>
+<button type="button" onClick={doCsv} style={{ alignSelf: "flex-start", minHeight: "46px", padding: "0 20px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>Download businesses (CSV)</button>
+</section>
+<section style={{ padding: "20px", borderRadius: "22px", background: "var(--glass)", border: "1px solid var(--line)", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontFamily: "var(--display)", fontWeight: "900", fontSize: "30px" }}>Automatic backups</strong>
+<span style={{ color: "var(--ink2)", lineHeight: "1.5" }}>Supabase backs up the whole database every day. To undo a big mistake, ask Claude: it can restore from those backups or from a file downloaded here. Restoring is not a button on purpose, so nobody can wipe the site by accident.</span>
+</section>
+</div>
+</>)}
+</div>
+</main>
+</>)}
+{(editing) && (<>
+<div style={{ position: "fixed", inset: "0", zIndex: "60", display: "flex", justifyContent: "flex-end" }}>
+<button type="button" onClick={closeEdit} aria-label="Close editor" style={{ position: "absolute", inset: "0", border: "0", background: "rgba(8,6,4,.6)", cursor: "pointer" }}></button>
+<form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby="ed-h" style={{ position: "relative", width: "min(100%,640px)", height: "100%", overflowY: "auto", background: "var(--solid)", borderLeft: "1px solid var(--line2)", display: "flex", flexDirection: "column" }}>
+<div style={{ position: "sticky", top: "0", zIndex: "2", display: "flex", alignItems: "center", gap: "10px", padding: "16px 20px", background: "var(--solid)", borderBottom: "1px solid var(--line)" }}>
+<h2 id="ed-h" style={{ margin: "0", flex: "1", fontFamily: "var(--display)", fontWeight: "900", fontSize: "34px", lineHeight: "1" }}>{formTitle}</h2>
+<button type="button" onClick={closeEdit} aria-label="Close" style={{ width: "44px", height: "44px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", fontSize: "22px", cursor: "pointer" }}>×</button>
+</div>
+<div style={{ padding: "20px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,240px),1fr))", gap: "14px", alignContent: "start", flex: "1" }}>
+{(formFields).map((f, _k31) => (<Fragment key={_k31}>
+{(f.isText) && (<><label style={{ gridColumn: f.span, display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>{f.label}<input type={f.type} value={f.value} onChange={f.onChange} placeholder={f.ph} required={f.req} disabled={f.dis} style={{ minHeight: "48px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }} />{(f.hint) && (<><span style={{ fontSize: "12px", fontWeight: "600", color: "var(--ink2)" }}>{f.hint}</span></>)}</label></>)}
+{(f.isArea) && (<><label style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>{f.label}<textarea rows="3" value={f.value} onChange={f.onChange} placeholder={f.ph} style={{ padding: "12px 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px", resize: "vertical" }}></textarea>{(f.hint) && (<><span style={{ fontSize: "12px", fontWeight: "600", color: "var(--ink2)" }}>{f.hint}</span></>)}</label></>)}
+{(f.isSelect) && (<><label style={{ gridColumn: f.span, display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>{f.label}<select key={f.key} defaultValue={f.value} onChange={f.onChange} style={{ minHeight: "48px", padding: "0 12px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px" }}>{(f.options).map((o, _k32) => (<Fragment key={_k32}><option value={o.v}>{o.l}</option></Fragment>))}</select></label></>)}
+{(f.isCheck) && (<><label style={{ display: "flex", gap: "10px", alignItems: "center", minHeight: "48px", padding: "0 14px", borderRadius: "12px", border: "1px solid var(--line)", fontWeight: "700", fontSize: "15px", cursor: "pointer" }}><input type="checkbox" checked={f.checked} onChange={f.onChange} style={{ width: "20px", height: "20px", flexShrink: "0" }} />{f.label}</label></>)}
+{(f.isSection) && (<><strong style={{ gridColumn: "1 / -1", marginTop: "8px", paddingTop: "14px", borderTop: "1px solid var(--line)", fontSize: "12px", fontWeight: "800", letterSpacing: ".14em", textTransform: "uppercase", color: "var(--mariText)" }}>{f.label}</strong></>)}
+{(f.isStory) && (<><div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "8px" }}><label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "14px" }}>{f.label}<textarea ref={f.ref} rows="16" value={f.value} onChange={f.onChange} placeholder={f.ph} style={{ padding: "14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "16px", lineHeight: "1.6", resize: "vertical", fontFamily: "Georgia, serif" }}></textarea></label><div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}><span style={{ fontSize: "13px", color: "var(--ink2)", flex: "1" }}>{f.words}</span><label style={{ minHeight: "38px", display: "inline-flex", alignItems: "center", padding: "0 14px", borderRadius: "999px", border: "1.5px solid var(--line2)", fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>{f.inlineLabel}<input type="file" accept="image/*" onChange={f.onInline} style={{ position: "absolute", width: "1px", height: "1px", opacity: "0" }} /></label></div><details style={{ fontSize: "13px", color: "var(--ink2)", border: "1px solid var(--line)", borderRadius: "12px", padding: "10px 12px" }}><summary style={{ cursor: "pointer", fontWeight: "800", color: "var(--ink)" }}>How to format the story</summary><dl style={{ margin: "8px 0 0", display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px 12px" }}>{(f.cheats).map((x, _kc) => (<Fragment key={_kc}><dt style={{ fontFamily: "ui-monospace,monospace", fontWeight: "700", color: "var(--ink)" }}>{x[0]}</dt><dd style={{ margin: "0" }}>{x[1]}</dd></Fragment>))}</dl></details></div></>)}
+{(f.isHours) && (<><div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "8px" }}><strong style={{ fontSize: "14px" }}>{f.label}</strong>{(f.noHours) && (<><button type="button" onClick={f.addHours} style={{ alignSelf: "flex-start", minHeight: "42px", padding: "0 16px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>+ Add opening hours</button></>)}{(f.days).map((d, _kd) => (<Fragment key={_kd}><div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}><span style={{ width: "92px", fontWeight: "700", fontSize: "14px" }}>{d.n}</span><label style={{ display: "inline-flex", gap: "6px", alignItems: "center", fontSize: "13px", fontWeight: "700" }}><input type="checkbox" checked={d.closed} onChange={d.onClosed} style={{ width: "18px", height: "18px" }} />Closed</label>{(d.open) && (<><input type="time" aria-label={d.n + " opens"} value={d.o} onChange={d.onO} style={{ minHeight: "40px", padding: "0 10px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }} /><span>to</span><input type="time" aria-label={d.n + " closes"} value={d.c} onChange={d.onC} style={{ minHeight: "40px", padding: "0 10px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)" }} /></>)}</div></Fragment>))}{(f.hasHours) && (<><button type="button" onClick={f.clearHours} style={{ alignSelf: "flex-start", minHeight: "36px", padding: "0 12px", borderRadius: "999px", border: "0", background: "transparent", color: "var(--ink2)", fontWeight: "700", textDecoration: "underline", cursor: "pointer" }}>Remove opening hours</button></>)}</div></>)}
+{(f.isNote) && (<><p style={{ gridColumn: "1 / -1", margin: "0", padding: "10px 14px", borderRadius: "12px", background: "var(--glass2)", border: "1px dashed var(--line2)", fontSize: "13px", color: "var(--ink2)", lineHeight: "1.5" }}>{f.label}</p></>)}
+</Fragment>))}
+{(isBizForm) && (<>
+<div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "10px" }}>
+<div style={{ display: "flex", alignItems: "baseline", gap: "6px 10px", flexWrap: "wrap" }}><strong style={{ fontSize: "14px" }}>{photoLabel}</strong><span style={{ fontSize: "13px", fontWeight: "800", color: photoColor }}>{photoCount}</span><span style={{ fontSize: "13px", color: "var(--ink2)" }}>{photoHint}</span></div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: "10px" }}>
+{(photos).map((p, _k33) => (<Fragment key={_k33}><div style={{ position: "relative", aspectRatio: "4/3", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--line)", backgroundImage: p.bg, backgroundSize: "cover", backgroundPosition: "center", border: `2px solid ${p.border}` }}>
+{(p.cover) && (<><span style={{ position: "absolute", left: "6px", top: "6px", background: "#F5B83D", color: "#1A1410", fontSize: "10px", fontWeight: "800", letterSpacing: ".08em", textTransform: "uppercase", padding: "3px 6px", borderRadius: "5px" }}>Cover</span></>)}
+<div style={{ position: "absolute", right: "6px", bottom: "6px", display: "flex", gap: "4px" }}>
+{(p.notCover) && (<><button type="button" onClick={p.makeCover} style={{ minHeight: "30px", padding: "0 9px", borderRadius: "99px", border: "0", background: "rgba(14,10,7,.78)", color: "#fff", fontSize: "11px", fontWeight: "800", cursor: "pointer" }}>Make cover</button></>)}
+<button type="button" onClick={p.remove} aria-label={`Remove photo ${p.n}`} style={{ width: "30px", height: "30px", borderRadius: "99px", border: "0", background: "rgba(14,10,7,.78)", color: "#fff", fontSize: "15px", cursor: "pointer" }}>×</button>
+</div>
+</div></Fragment>))}
+<label style={{ position: "relative", aspectRatio: "4/3", borderRadius: "12px", border: "1.5px dashed var(--line2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", cursor: "pointer", fontWeight: "800", fontSize: "14px", textAlign: "center", padding: "8px" }}><span style={{ fontSize: "26px", lineHeight: "1" }}>+</span>{(notUploading) && (<>Add photos</>)}{(uploading) && (<>Uploading…</>)}<input type="file" accept="image/*" multiple={true} onChange={onFiles} style={{ position: "absolute", width: "1px", height: "1px", opacity: "0" }} /></label>
+</div>
+</div>
+</>)}
+{(isStoryForm) && (<>
+<div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "12px" }}>
+<div style={{ display: "flex", alignItems: "baseline", gap: "6px 10px", flexWrap: "wrap" }}><strong style={{ fontSize: "14px" }}>Slides *</strong><span style={{ fontSize: "13px", color: "var(--ink2)" }}>Shown one after another, like Instagram Stories. The first slide's photo is the circle on the home page. Tall (portrait) photos work best.</span></div>
+{(noSlides) && (<><span style={{ fontSize: "14px", color: "var(--ink2)" }}>No slides yet.</span></>)}
+{(sSlides).map((st, _k34) => (<Fragment key={_k34}>
+<div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "14px", borderRadius: "16px", border: "1.5px solid var(--line2)", background: "var(--glass)" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ width: "32px", height: "32px", borderRadius: "99px", background: "var(--mari)", color: "#1A1410", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: "0" }}>{st.n}</span><strong style={{ flex: "1", fontSize: "14px" }}>Slide {st.n}</strong>
+<button type="button" onClick={st.up} disabled={st.upDis} aria-label="Move slide up" style={{ minWidth: "36px", height: "36px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↑</button><button type="button" onClick={st.down} disabled={st.downDis} aria-label="Move slide down" style={{ minWidth: "36px", height: "36px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↓</button>
+<button type="button" onClick={st.del} aria-label={`Remove slide ${st.n}`} style={{ minHeight: "36px", padding: "0 12px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--red)", fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>Remove</button></div>
+<div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-start" }}>
+<div style={{ flex: "0 0 112px", display: "flex", flexDirection: "column", gap: "6px" }}>
+<div style={{ width: "112px", aspectRatio: "9/16", borderRadius: "12px", backgroundColor: "var(--line)", backgroundImage: st.bg, backgroundSize: "cover", backgroundPosition: "center", border: "1.5px solid var(--line2)" }}></div>
+<label style={{ minHeight: "36px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "99px", border: "1.5px dashed var(--line2)", fontWeight: "800", fontSize: "12px", cursor: "pointer", position: "relative", overflow: "hidden" }}>+ Photo<input type="file" accept="image/*" onChange={st.onFile} aria-label={`Upload photo for slide ${st.n}`} style={{ position: "absolute", inset: "0", opacity: "0", cursor: "pointer" }} /></label>
+{(st.hasPhoto) && (<><button type="button" onClick={st.rmPhoto} style={{ minHeight: "32px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink2)", fontWeight: "700", fontSize: "12px", cursor: "pointer" }}>Remove photo</button></>)}
+</div>
+<div style={{ flex: "1 1 220px", minWidth: "0", display: "flex", flexDirection: "column", gap: "10px" }}>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Small label<input value={st.kicker} onChange={st.onK} placeholder="e.g. Just opened" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Headline *<input value={st.title} onChange={st.onT} placeholder="e.g. Fish buns, gone by noon" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Text<textarea rows="2" value={st.text} onChange={st.onX} style={{ padding: "10px 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px", resize: "vertical" }}></textarea></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Button link<input value={st.href} onChange={st.onH} placeholder="#/b/… or https://…" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Button text<input value={st.cta} onChange={st.onC} placeholder="e.g. See the menu" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+</div>
+</div>
+</div>
+</Fragment>))}
+<button type="button" onClick={addSlide} style={{ alignSelf: "flex-start", minHeight: "44px", padding: "0 18px", borderRadius: "999px", border: "1.5px dashed var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>+ Add a slide</button>
+</div>
+</>)}
+{(isJourneyForm) && (<>
+<div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "12px" }}>
+<div style={{ display: "flex", alignItems: "baseline", gap: "6px 10px", flexWrap: "wrap" }}><strong style={{ fontSize: "14px" }}>Steps *</strong><span style={{ fontSize: "13px", color: "var(--ink2)" }}>In order, first to last. Each step lists the businesses people should book.</span></div>
+{(noSteps) && (<><span style={{ fontSize: "14px", color: "var(--ink2)" }}>No steps yet.</span></>)}
+{(jSteps).map((st, _k35) => (<Fragment key={_k35}>
+<div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "14px", borderRadius: "16px", border: "1.5px solid var(--line2)", background: "var(--glass)" }}>
+<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+<span style={{ width: "32px", height: "32px", borderRadius: "99px", background: "var(--mari)", color: "#1A1410", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: "0" }}>{st.n}</span>
+<strong style={{ flex: "1", fontSize: "14px" }}>Step {st.n}</strong>
+<button type="button" onClick={st.up} disabled={st.upDis} aria-label="Move step up" style={{ width: "36px", height: "36px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↑</button>
+<button type="button" onClick={st.down} disabled={st.downDis} aria-label="Move step down" style={{ width: "36px", height: "36px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--ink)", cursor: "pointer" }}>↓</button>
+<button type="button" onClick={st.del} aria-label={`Remove step ${st.n}`} style={{ minHeight: "36px", padding: "0 12px", borderRadius: "99px", border: "1px solid var(--line2)", background: "transparent", color: "var(--red)", fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>Remove</button>
+</div>
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,200px),1fr))", gap: "10px" }}>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>When<input value={st.when} onChange={st.onWhen} placeholder="e.g. 12–18 months out" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Step title *<input value={st.t} onChange={st.onT} placeholder="e.g. Lock the hall" style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} /></label>
+</div>
+<label style={{ display: "flex", flexDirection: "column", gap: "6px", fontWeight: "700", fontSize: "13px" }}>Tip<textarea rows="2" value={st.d} onChange={st.onD} placeholder="A short, helpful line for this step" style={{ padding: "10px 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px", resize: "vertical" }}></textarea></label>
+<span style={{ fontSize: "13px", fontWeight: "800", color: "var(--ink2)" }}>{st.vcount}</span>
+{(st.noVendors) && (<><span style={{ fontSize: "13px", color: "var(--ink2)" }}>Search below to add businesses.</span></>)}
+<div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>{(st.vendors).map((v, _k36) => (<Fragment key={_k36}><span style={{ display: "inline-flex", alignItems: "center", gap: "4px", minHeight: "34px", padding: "0 4px 0 12px", borderRadius: "999px", border: "1px solid var(--line2)", fontSize: "13px", fontWeight: "700" }}>{v.n}<button type="button" onClick={v.remove} aria-label={`Remove ${v.n}`} style={{ width: "28px", height: "28px", borderRadius: "99px", border: "0", background: "transparent", color: "var(--ink2)", fontSize: "16px", cursor: "pointer" }}>×</button></span></Fragment>))}</div>
+<input type="search" value={st.pick} onChange={st.onPick} placeholder="Search businesses to add to this step…" aria-label={`Search businesses for step ${st.n}`} style={{ minHeight: "44px", padding: "0 12px", borderRadius: "10px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} />
+{(st.pickRes).map((p, _k37) => (<Fragment key={_k37}><div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 6px 6px 12px", borderRadius: "10px", background: "var(--glass2)" }}><span style={{ flex: "1", minWidth: "0", display: "flex", flexDirection: "column" }}><strong style={{ fontSize: "14px" }}>{p.n}</strong><span style={{ fontSize: "12px", color: "var(--ink2)" }}>{p.sub}</span></span><button type="button" onClick={p.add} style={{ minHeight: "34px", padding: "0 14px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>Add</button></div></Fragment>))}
+</div>
+</Fragment>))}
+<button type="button" onClick={addStep} style={{ alignSelf: "flex-start", minHeight: "44px", padding: "0 18px", borderRadius: "999px", border: "1.5px dashed var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>+ Add a step</button>
+</div>
+</>)}
+{(isCollForm) && (<>
+<div style={{ gridColumn: "1 / -1", display: "flex", flexDirection: "column", gap: "10px" }}>
+<strong style={{ fontSize: "14px" }}>Businesses in this list *</strong>
+{(noPickSel) && (<><span style={{ fontSize: "14px", color: "var(--ink2)" }}>None yet. Search below to add some.</span></>)}
+<ol style={{ margin: "0", padding: "0", listStyle: "none", display: "flex", flexDirection: "column", gap: "6px" }}>{(pickSel).map((p, _k38) => (<Fragment key={_k38}><li style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 8px 8px 14px", borderRadius: "12px", border: "1px solid var(--line2)" }}><span style={{ fontWeight: "800", color: "var(--mariText)" }}>{p.i}</span><span style={{ flex: "1", minWidth: "0", fontWeight: "700" }}>{p.n}</span><button type="button" onClick={p.remove} aria-label={`Remove ${p.n}`} style={{ width: "36px", height: "36px", borderRadius: "99px", border: "0", background: "transparent", color: "var(--ink2)", fontSize: "18px", cursor: "pointer" }}>×</button></li></Fragment>))}</ol>
+<input type="search" value={pick} onChange={onPick} placeholder="Search businesses to add…" aria-label="Search businesses to add" style={{ minHeight: "46px", padding: "0 14px", borderRadius: "12px", border: "1.5px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontSize: "15px" }} />
+{(pickRes).map((p, _k39) => (<Fragment key={_k39}><div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 8px 8px 14px", borderRadius: "12px", background: "var(--glass)" }}><span style={{ flex: "1", minWidth: "0", display: "flex", flexDirection: "column" }}><strong style={{ fontSize: "14px" }}>{p.n}</strong><span style={{ fontSize: "12px", color: "var(--ink2)" }}>{p.sub}</span></span><button type="button" onClick={p.add} style={{ minHeight: "36px", padding: "0 14px", borderRadius: "999px", border: "0", background: "var(--ink)", color: "var(--bg)", fontWeight: "800", fontSize: "13px", cursor: "pointer" }}>Add</button></div></Fragment>))}
+</div>
+</>)}
+</div>
+<div style={{ position: "sticky", bottom: "0", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", padding: "14px 20px", background: "var(--solid)", borderTop: "1px solid var(--line)" }}>
+{(hasFormErr) && (<><span role="alert" style={{ flex: "1 1 100%", color: "var(--red)", fontWeight: "700" }}>{formErr}</span></>)}
+<button type="submit" disabled={saving} style={{ minHeight: "50px", padding: "0 24px", borderRadius: "999px", border: "0", background: "var(--act)", color: "#fff", fontWeight: "800", fontSize: "15px", cursor: "pointer" }}>{saveLabel}</button>
+<button type="button" onClick={closeEdit} style={{ minHeight: "50px", padding: "0 18px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", cursor: "pointer" }}>Cancel</button>
+</div>
+</form>
+</div>
+</>)}
+{(hasToast) && (<><div role="status" style={{ position: "fixed", left: "50%", bottom: "24px", transform: "translateX(-50%)", zIndex: "70", background: "var(--ink)", color: "var(--bg)", padding: "12px 20px", borderRadius: "999px", fontWeight: "800", fontSize: "15px", maxWidth: "calc(100% - 32px)", textAlign: "center", boxShadow: "var(--shadow)" }}>{toast}</div></>)}
+</div>
+    </>
+  )
+}

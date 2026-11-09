@@ -23,7 +23,7 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
   const [nl, setNl] = useState({ done: false, busy: false, err: '' })
   useEffect(() => { const t = setInterval(() => setPh((x) => x + 1), 3400); return () => clearInterval(t) }, [])
 
-  const hero = HERO
+  const hero = site.hero || HERO
   const stats = { biz: all.length, open: all.filter((b) => b.isOpen).length, cats: site.categories.length, hoods: site.neighbourhoods.length }
   const askPlaceholder = 'Ask: “' + EX[ph % EX.length] + '”'
   const onAskDraft = (e) => setAskDraft(e.target.value)
@@ -44,7 +44,13 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture }
   const rings = useMemo(() => {
     const sl = (b) => ({ kicker: b.catLabel + ' · ' + b.hoodName, title: b.name, text: b.address || b.short, tone: b.tone, bgImg: b.bgImg, bgSize: b.bgSize, href: b.href, cta: 'See ' + b.name })
     const first = site.collections[0]
-    return [
+    // Stories made in the admin come first; the automatic ones follow unless switched off there.
+    const own = (site.stories || []).map((g) => ({
+      label: g.label, c1: g.tone || '#F5B83D', c2: '#FF6B7D',
+      slides: g.slides.map((x) => ({ kicker: x.kicker, title: x.title, text: x.text, tone: g.tone, bgImg: x.photo ? `url("${x.photo}")` : 'none', bgSize: 'cover', href: x.href || '/', cta: x.cta || 'Take a look' })),
+    }))
+    if (site.autoStories === false) return own.filter((r) => r.slides.length)
+    return [...own, 
       { label: 'Wedding season', c1: '#F5C443', c2: '#E2629B', slides: (first ? first.businessIds : []).map((id) => byId[id]).filter(Boolean).map(sl) },
       { label: 'Buying a home', c1: '#F5B83D', c2: '#FF6B7D', slides: pick(/real estate agents|mortgage/i, 6).map(sl) },
       { label: 'Reno season', c1: '#A5C25A', c2: '#5EC2D1', slides: pick(/renovation|kitchen/i, 6).map(sl) },

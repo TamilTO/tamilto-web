@@ -36,7 +36,7 @@ export default function ForBizView({ raw, nowAt, claimId }) {
   const TIERS = site.plans
   const tier = TIERS.find((t) => t.key === c.plan) || TIERS[0]
   const pb = c.pick && c.pick !== 'new' ? byId[c.pick] : null
-  const perks = PERKS, howSteps = HOW
+  const perks = site.perks && site.perks.length ? site.perks : PERKS, howSteps = site.how && site.how.length ? site.how : HOW
   const claimBar = [1, 2, 3, 4].map((i) => ({ c: i <= c.step ? 'var(--mari)' : 'var(--line2)' }))
   const q = c.q.trim().toLowerCase()
   const claim = {

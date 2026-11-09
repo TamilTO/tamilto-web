@@ -1,0 +1,12 @@
+/* TamilTO Admin v3: small page-wide rules from the design. Everything else is inline in View.js
+   and uses the site's colour tokens, so dark and light mode match the website. */
+input::placeholder, textarea::placeholder { color: var(--ink2); opacity: .85; }
+@media (max-width: 1100px) {
+  aside[aria-label="Admin sections"] { position: static !important; max-height: none !important; overflow: visible !important; flex-basis: 100% !important; }
+  aside[aria-label="Admin sections"] nav button { min-height: 44px !important; }
+  aside[aria-label="Admin sections"] [data-hint] { display: none !important; }
+}
+/* Phones: the header keeps the logo, theme and log-out buttons; "View live website" stays in the menu. */
+@media (max-width: 560px) {
+  header a[href="/"][target="_blank"] { display: none !important; }
+}
