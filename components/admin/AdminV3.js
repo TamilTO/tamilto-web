@@ -9,6 +9,7 @@ import { describe } from './describe'
 import { downloadXlsx, printDoc, pdfHead, pdfCards, pdfBars, pdfTable, pdfFoot, nf } from './reports'
 import { markupToBlocks, blocksToMarkup } from '@/lib/body-markup.mjs'
 import { HERO, PERKS, HOW, PLANS, EXAMPLES, withDefaults } from '@/lib/site-defaults.mjs'
+import { MK, MK_ORDER, toDraft, fromDraft, FROM_SUB, MK_SETTINGS, PAGE_NAMES } from './market-admin'
 
 const PAGE = 25
 const KL = { view: 'Profile views', whatsapp: 'WhatsApp taps', call: 'Calls', directions: 'Directions', website: 'Website clicks', social: 'Social media clicks', reviews: 'Google reviews clicks', email: 'Emails', save: 'Saves to shortlists', share: 'Shares', quote: 'Quote requests', listing: 'Listing sign-ups' }
@@ -24,11 +25,11 @@ const EV_TYPES = ['Festival', 'Culture', 'Concert', 'Food', 'Film', 'Sports', 'C
 const SECTIONS = [['eat', 'Eat'], ['culture', 'Culture'], ['people', 'People'], ['guides', 'Guides'], ['business', 'Business']]
 const SOCIAL = [['instagram', 'Instagram', 'https://instagram.com/'], ['facebook', 'Facebook', 'https://facebook.com/'], ['tiktok', 'TikTok', 'https://tiktok.com/@'], ['youtube', 'YouTube', 'https://youtube.com/@'], ['x', 'X (Twitter)', 'https://x.com/'], ['linkedin', 'LinkedIn', 'https://linkedin.com/company/']]
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const NOUN = { biz: 'business', event: 'event', article: 'article', coll: 'list', journey: 'life moment', story: 'story', cat: 'category', hood: 'area', sitehero: 'home page headline', siteex: 'search suggestions', plan: 'pricing plan', siteperks: 'benefits', sitehow: 'how-it-works steps' }
+const NOUN = { mkt: 'item', mitem: 'marketplace item', mpage: 'page intro', mnotice: 'notices', mnews: 'newsletter box', mawards: 'awards', biz: 'business', event: 'event', article: 'article', coll: 'list', journey: 'life moment', story: 'story', cat: 'category', hood: 'area', sitehero: 'home page headline', siteex: 'search suggestions', plan: 'pricing plan', siteperks: 'benefits', sitehow: 'how-it-works steps' }
 const CHEATS = [['Empty line', 'new paragraph'], ['## Heading', 'big heading'], ['### Heading', 'small heading'], ['**words**', 'bold'], ['*words*', 'italic'], ['[words](https://…)', 'link'], ['- item', 'bullet list'], ['1. item', 'numbered list'], ['> Quote -- Name', 'pull quote'], ['#1 Name | Area | Why', 'best-of list item'], ['Instagram/TikTok/YouTube link on its own line', 'shows the post']]
 const LEAD_STEPS = ['new', 'replied', 'booked', 'closed']
-const SUBKIND = { claim: 'Business claim', tip: 'Story tip', event: 'Event', listing: 'Business listing', ad: 'Advertising' }
-const FLBL = { biz: 'Business', cat: 'Category', area: 'Area', addr: 'Address', city: 'City', postal: 'Postal code', short: 'Description', services: 'Services', hours: 'Hours', contact: 'Contact', role: 'Role', phone: 'Phone', whatsapp: 'WhatsApp', email: 'Email', web: 'Website', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', gmap: 'Google Maps', quotes: 'Wants quotes', hiring: 'Hiring', delivery: 'Delivery', deal: 'Deal', jobs: 'Jobs', plan: 'Plan', claimOf: 'Claims listing', languages: 'Languages' }
+const SUBKIND = { claim: 'Business claim', tip: 'Story tip', event: 'Event', listing: 'Business listing', ad: 'Advertising', request: 'Customer request', job: 'Job post', classified: 'Classified ad', creator: 'Creator sign-up', booking: 'Creator booking', nomination: 'Award nomination' }
+const FLBL = { t: 'Title', d: 'Details', when: 'When', size: 'Size', budget: 'Budget', type: 'Job type', pay: 'Pay', kind: 'Type', price: 'Price', handle: 'Handle', niche: 'Niche', plats: 'Platforms', creator: 'Creator', creatorId: 'Creator id', brief: 'Brief', why: 'Why', package: 'Package', interest: 'Interested in', msg: 'Message', name: 'Name', biz: 'Business', cat: 'Category', area: 'Area', addr: 'Address', city: 'City', postal: 'Postal code', short: 'Description', services: 'Services', hours: 'Hours', contact: 'Contact', role: 'Role', phone: 'Phone', whatsapp: 'WhatsApp', email: 'Email', web: 'Website', instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', gmap: 'Google Maps', quotes: 'Wants quotes', hiring: 'Hiring', delivery: 'Delivery', deal: 'Deal', jobs: 'Jobs', plan: 'Plan', claimOf: 'Claims listing', languages: 'Languages' }
 
 const ymdTO = (d = new Date()) => d.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' })
 const bg = (path) => (path ? `url("${mediaUrl(path)}")` : 'none')
@@ -78,11 +79,14 @@ const L = {
   subs: () => all('submissions', '*', ['created_at']),
   leads: () => all('leads', '*, lead_recipients(business_id, status, notified_at)', ['created_at']),
   team: () => all('admins', '*', ['created_at']),
+  mkt: () => maybe(all('market_items', '*', ['kind', 'sort', 'created_at'])),
+  replies: () => maybe(all('request_replies', '*', ['created_at'])),
+  counts: () => sb().rpc('market_counts').then(({ data }) => data || {}, () => ({})),
   log: () => run(sb().from('audit_log').select('*').not('entity', 'in', '(collection_items,journey_step_businesses)').order('created_at', { ascending: false }).limit(10)),
 }
 
 export default function AdminV3() {
-  const [s, setS] = useState({ phase: 'loading', email: '', pass: '', loginErr: '', resetMsg: '', newPw: '', tab: 'overview', q: '', fcat: '', fhood: '', fflag: 'all', page: 0, confirm: null, sec: '', ibox: 'pending', ikind: 'all', pick: '', jpick: {}, newEmail: '', newName: '', newRole: 'editor', theme: 'dark' })
+  const [s, setS] = useState({ phase: 'loading', email: '', pass: '', loginErr: '', resetMsg: '', newPw: '', tab: 'overview', mk: 'request', q: '', fcat: '', fhood: '', fflag: 'all', page: 0, confirm: null, sec: '', ibox: 'pending', ikind: 'all', pick: '', jpick: {}, newEmail: '', newName: '', newRole: 'editor', theme: 'dark' })
   const [st, setSt] = useState(null) // the loaded content
   const [edit, setEdit] = useState(null)
   const [toast, setToast] = useState('')
@@ -131,6 +135,10 @@ export default function AdminV3() {
     loadGroups(...Object.keys(L)).catch((e) => set({ loadErr: friendly(e) }))
   }, [s.phase, st, loadGroups, set])
 
+  // Votes and replies arrive from the website all the time: re-read them when their tab opens.
+  useEffect(() => {
+    if (s.phase === 'in' && st && (s.tab === 'votes' || s.tab === 'mkt')) loadGroups('replies', 'counts', 'mkt').catch(() => {})
+  }, [s.phase, s.tab, !!st, loadGroups]) // eslint-disable-line react-hooks/exhaustive-deps
   const isEditor = s.role === 'owner' || s.role === 'editor'
   const done = async (msg, keys = [], site = true) => {
     if (keys.length) await loadGroups(...keys, 'log')
@@ -221,7 +229,10 @@ export default function AdminV3() {
   const catOf = (k) => cats.find((c) => c.key === k) || { label: k, colour: '#888' }
   const hoodOf = (k) => hoods.find((h) => h.key === k) || { name: k || 'GTA-wide', colour: '#888' }
   const byId = Object.fromEntries(biz.map((b) => [b.id, b]))
+  const bySlug = Object.fromEntries(biz.map((b) => [b.slug, b]))
+  const mkOf = (k) => (st.mkt || []).filter((x) => x.kind === k)
   const settings = withDefaults(st.settings || {})
+  const RS = st.settings || {}
   const nowIso = new Date().toISOString()
   const go = (tab, extra = {}) => () => { set({ tab, confirm: null, page: 0, ...extra }); window.scrollTo(0, 0) }
   const opts = (k) => ({
@@ -233,6 +244,12 @@ export default function AdminV3() {
     sec: SECTIONS.map(([k, l]) => ({ v: k, l })),
     tones: TONES.map(([l, c]) => ({ v: c, l })),
     plan: [{ v: 'free', l: 'Free' }, { v: 'featured', l: 'Featured' }, { v: 'partner', l: 'Partner' }],
+    reqcats: (mkOf('requestCat').map((x) => x.data.l).filter(Boolean)).map((l) => ({ v: l, l })),
+    jobtypes: MK_SETTINGS.JOB_TYPES.map((l) => ({ v: l, l })),
+    clkinds: MK_SETTINGS.CLASSIFIED_KINDS.map((l) => ({ v: l, l })),
+    biz: biz.filter((b) => !b.is_hidden).map((b) => ({ v: b.slug, l: b.name })),
+    biz0: [{ v: '', l: 'Not linked' }, ...biz.filter((b) => !b.is_hidden).map((b) => ({ v: b.slug, l: b.name }))],
+    journeys: [{ v: '', l: 'None' }, ...st.journeys.map((j) => ({ v: j.slug, l: j.title }))],
   })[k] || []
 
   const pendingSubs = st.claims.filter((c) => c.status === 'pending').length + st.subs.filter((y) => y.status === 'pending').length
@@ -244,13 +261,14 @@ export default function AdminV3() {
   v.liveDot = lastAt ? 'var(--green)' : 'var(--ink2)'
 
   // ----- navigation -----
-  const counts = { biz: biz.length, cat: cats.length, hood: hoods.length, event: st.events.length, article: st.articles.length, story: st.stories.length, coll: st.colls.length, journey: st.journeys.length, quotes: newLeads, inbox: pendingSubs }
+  const counts = { mkt: (st.mkt || []).length, biz: biz.length, cat: cats.length, hood: hoods.length, event: st.events.length, article: st.articles.length, story: st.stories.length, coll: st.colls.length, journey: st.journeys.length, quotes: newLeads, inbox: pendingSubs }
   const G = [
     ['Insights', [['overview', 'Overview', 'Today at a glance', '#F5B83D'], ['stats', 'Website activity', 'Visits, searches, clicks', '#5EC2D1'], ['reports', 'Business reports', 'PDF & Excel for clients', '#62D394']]],
     ['Directory', [['biz', 'Businesses', 'Add, edit, photos, links', '#FF6B7D'], ['cat', 'Categories', 'Filters, tiles, pins', '#C77BD8'], ['hood', 'Neighbourhoods', 'Area pages & taglines', '#9C86F0']]],
     ['Content', [['event', 'Events', 'Dates, venues, tickets', '#F59A3D'], ['article', 'Articles', 'Eat, Culture, People, Guides', '#E2629B'], ['story', 'Stories', 'Home page story circles', '#FF6B7D'], ['coll', 'Lists', 'Cousin-approved lists', '#F5C443'], ['journey', 'Life moments', 'Wedding, baby, new home', '#8A9BF0']]],
     ['Inbox', [['quotes', 'Quote requests', 'Customers asking vendors for prices', '#FF6B7D'], ['inbox', 'Client submissions', 'Claims, tips, events, listings', '#62D394']]],
-    ['Website', [['site', 'Site content', 'Headline, plans, benefits', '#4FC9B5']]],
+    ['Marketplace', [['mkt', 'Marketplace', 'Requests, jobs, deals, hubs', '#E2629B'], ['votes', 'Awards & replies', 'Votes and request replies', '#F5B83D']]],
+    ['Website', [['site', 'Site content', 'Headline, plans, page words', '#4FC9B5']]],
     ['System', [['log', 'Change log', 'Every edit, who and when', '#F5B83D'], ['team', 'Team & login', 'Who can sign in, password', '#C6A3F0'], ['data', 'Data & backup', 'Download everything', '#CDBFAC']]],
   ]
   v.navGroups = G.map(([title, items]) => ({
@@ -271,7 +289,8 @@ export default function AdminV3() {
   v.isList = !v.isOverview && !v.isData && !v.isStats && !v.isReports && !v.isInbox && !v.isTeam
   v.isBizTab = t === 'biz'
   v.isStoryTab = t === 'story'
-  v.isArtTab = t === 'article'
+  v.isArtTab = t === 'article' || t === 'mkt'
+  v.isArtOnly = t === 'article'
 
   // ----- overview -----
   const hiddenReady = biz.filter((b) => b.is_hidden && b.photos.length >= MINPH).length
@@ -311,9 +330,9 @@ export default function AdminV3() {
   v.onFhood = (e) => set({ fhood: e.target.value, page: 0 })
   v.onFflag = (e) => set({ fflag: e.target.value, page: 0 })
   v.hasPages = false
-  v.canCreate = isEditor && !['hood', 'site', 'log'].includes(t)
-  v.createLabel = 'New ' + (NOUN[t] || '')
-  v.create = () => openEdit(t)
+  v.canCreate = isEditor && !['hood', 'site', 'log', 'votes'].includes(t)
+  v.createLabel = 'New ' + (t === 'mkt' ? MK[s.mk].one : NOUN[t] || '')
+  v.create = () => (t === 'mkt' ? openEdit('mitem', null, null, toDraft(s.mk)) : openEdit(t))
   const pager = (n, page) => {
     const pages = Math.max(1, Math.ceil(n / PAGE)), p = Math.min(page, pages - 1)
     Object.assign(v, { hasPages: pages > 1, pageText: `Page ${p + 1} of ${pages}`, prevDis: p === 0, nextDis: p >= pages - 1, prevPage: () => set({ page: p - 1 }), nextPage: () => set({ page: p + 1 }) })
@@ -324,7 +343,7 @@ export default function AdminV3() {
     if (!M) return
     try {
       await Promise.all(M.map((x, k) => run(sb().from(table).update({ sort: k }).eq(idKey, x[idKey]))))
-      const grp = { categories: 'cats', collections: 'colls', journeys: 'journeys', home_stories: 'stories' }[table]
+      const grp = { categories: 'cats', collections: 'colls', journeys: 'journeys', home_stories: 'stories', market_items: 'mkt' }[table]
       await done('Order saved', [grp])
     } catch (e) { flash('⚠ ' + e.message) }
   }
@@ -458,6 +477,58 @@ export default function AdminV3() {
       })),
       mk('x:perks', { title: 'Benefits shown to businesses', sub: S.perks.map((p) => p.t).join(' · '), c: '#5FC98A', edit: () => openEdit('siteperks', { list: S.perks.map((p) => p.t + ' | ' + p.d).join('\n') }, 'perks'), view: '/business' }),
       mk('x:how', { title: '“How it works” steps', sub: S.how.map((p) => p.t).join(' → '), c: '#9C86F0', edit: () => openEdit('sitehow', { list: S.how.map((p) => p.t + ' | ' + p.d).join('\n') }, 'how'), view: '/business' }),
+      ...Object.keys(PAGE_NAMES).map((k) => { const pg = { ...MK_SETTINGS.PAGES[k], ...((RS.pages || {})[k] || {}) }; return mk('x:pg' + k, { title: 'Page intro: ' + PAGE_NAMES[k], sub: `${pg.title} — ${pg.lead}`, c: '#E2629B', edit: () => openEdit('mpage', pg, k), view: '/' + k }) }),
+      mk('x:notices', { title: 'Marketplace notices', sub: 'Ad labels, referral fees, request privacy', c: '#CDBFAC', edit: () => openEdit('mnotice', { ...MK_SETTINGS.NOTICES, ...(RS.notices || {}) }, 'notices'), view: '/creators' }),
+      mk('x:news', { title: 'Newsletter box', sub: (() => { const n = { ...MK_SETTINGS.NEWSLETTER, ...(RS.newsletter || {}) }; return n.t + (n.sponsor ? ' · presented by ' + n.sponsor : '') })(), c: '#5EC2D1', edit: () => openEdit('mnews', { ...MK_SETTINGS.NEWSLETTER, ...(RS.newsletter || {}) }, 'newsletter'), view: '/more' }),
+      mk('x:awards', { title: 'Best of awards', sub: (() => { const A = RS.awards && Array.isArray(RS.awards.cats) ? RS.awards : MK_SETTINGS.AWARDS; return `${A.year} · ${A.stage} · ${A.cats.length} categories` })(), c: '#F5B83D', edit: () => {
+        const A = RS.awards && Array.isArray(RS.awards.cats) ? RS.awards : MK_SETTINGS.AWARDS
+        openEdit('mawards', { year: A.year, stage: A.stage, voting: A.voting !== false, dates: String(A.dates || '').split('|').join('\n'), cats: A.cats.map((c) => [c.id, c.t, c.kw || '', c.neg || '', c.sponsor || ''].join(' | ')).join('\n') }, 'awards')
+      }, view: '/awards' }),
+    ]
+  }
+  if (t === 'mkt') {
+    const K = MK[s.mk] || MK.request, items = mkOf(s.mk)
+    const hn = (k) => (k ? hoodOf(k).name : ''), bn = (slug) => bySlug[slug]?.name || (slug ? slug + ' (not listed)' : '')
+    const replies = st.replies || []
+    const subOf = (x) => {
+      const y = x.submission_id && st.subs.find((z) => z.id === x.submission_id)
+      if (!y) return null
+      const f = Object.fromEntries((y.payload?.fields || []).map((z) => [z.key, z.value]))
+      return { name: y.name || f.name, email: y.email || f.email, phone: f.phone && fmtPhone(digits(f.phone)) }
+    }
+    v.secChips = MK_ORDER.map((k) => ({ label: MK[k].label + ' (' + mkOf(k).length + ')', sel: s.mk === k ? 'true' : 'false', onClick: () => set({ mk: k, confirm: null }), bg: s.mk === k ? 'var(--ink)' : 'var(--glass2)', fg: s.mk === k ? 'var(--bg)' : 'var(--ink)' }))
+    v.listTitle = K.label
+    v.countText = `${items.length} ${items.length === 1 ? K.one : K.label.toLowerCase()}${K.hint ? ' · ' + K.hint : ''}`
+    v.rows = items.map((x, i) => {
+      const d = x.data || {}, gone = K.expires && x.expires_on && x.expires_on < ymdTO(), nR = replies.filter((r) => r.item_id === x.id).length
+      const view = typeof K.view === 'function' ? K.view(d) : K.view
+      return mk('m:' + x.id, {
+        title: K.title(d, hn, bn) || '(no title)', sub: [K.sub(d, hn, bn), x.expires_on && 'until ' + x.expires_on].filter(Boolean).join(' · '), c: d.tone || K.dot,
+        badges: [x.is_hidden && { l: 'Hidden', c: 'var(--ink2)' }, gone && { l: 'Expired · not shown', c: 'var(--ink2)' }, d.boost && { l: 'Boosted', c: '#F5B83D' }, s.mk === 'request' && { l: nR + (nR === 1 ? ' reply' : ' replies'), c: nR ? 'var(--green)' : 'var(--line2)' }, x.submission_id && { l: 'From a reader', c: 'var(--teal)' }],
+        edit: () => openEdit('mitem', x, x.id, { ...toDraft(s.mk, x), _sub: subOf(x) }), view: x.is_hidden || gone || !view ? '' : view, hidden: x.is_hidden || gone,
+        del: remove(K.title(d, hn, bn) || K.one, () => run(sb().from('market_items').delete().eq('id', x.id)), ['mkt']),
+        up: reorder('market_items', items, i, -1), down: reorder('market_items', items, i, 1), first: i === 0, last: i === items.length - 1,
+      })
+    })
+  }
+  if (t === 'votes') {
+    const C = st.counts || {}, votes = C.votes || {}, aw = RS.awards || MK_SETTINGS.AWARDS
+    const cats = (aw.cats || []).length ? aw.cats : MK_SETTINGS.AWARDS.cats
+    v.listTitle = 'Awards & replies'
+    v.countText = 'Live vote counts for each award, then every business reply to a customer request (newest first). Customers’ details are never shown to businesses.'
+    v.rows = [
+      ...cats.map((c) => {
+        const L = Object.entries(votes[c.id] || {}).sort((a, b) => b[1] - a[1]), tot = L.reduce((n, [, k]) => n + k, 0)
+        return mk('v:' + c.id, { title: c.t, sub: tot ? `${tot} votes · ` + L.slice(0, 4).map(([slug, k]) => `${bySlug[slug]?.name || slug} ${k}`).join(' · ') : 'No votes yet', c: '#F5B83D', view: '/awards' })
+      }),
+      ...[...(st.replies || [])].reverse().map((r) => {
+        const it = (st.mkt || []).find((x) => x.id === r.item_id)
+        return mk('r:' + r.id, {
+          title: `${r.business_name} → ${it?.data?.t || 'a request'}`, sub: [fmtPhone(digits(r.phone)) || r.phone, r.message, when(r.created_at)].filter(Boolean).join(' · '), c: '#FF6B7D',
+          badges: [r.notified_at ? { l: 'Customer emailed', c: 'var(--green)' } : { l: 'Not emailed: pass it on', c: 'var(--red)' }],
+          view: wa(r.phone) || '',
+        })
+      }),
     ]
   }
   if (t === 'log') {
@@ -548,6 +619,11 @@ export default function AdminV3() {
       set({ tab: 'event' })
       openEdit('event', null, null, { title: y.title || d.title || d.event || '', venue: d.venue || d.location || '', ticket_url: d.ticketUrl || d.link || d.url || d.tickets || '', description: d.description || d.details || d.message || '', address: d.address || '', price: String(d.price || '0').replace(/[^\d.]/g, '') || '0', _subId: y.id, photos: y.photo_path ? [{ storage_path: y.photo_path, alt: y.title }] : [] })
       flash('Pick the date and time, then Save & publish.')
+    }
+    else if (FROM_SUB[y._k]) approve = () => {
+      set({ tab: 'mkt', mk: y._k })
+      openEdit('mitem', null, null, { ...toDraft(y._k), ...Object.fromEntries(Object.entries(FROM_SUB[y._k](d)).filter(([, x]) => x)), _subId: y.id })
+      flash('Check the words, then Save & publish.')
     }
     const lines = Object.entries(d).filter(([k, x]) => k !== 'photos' && x !== '' && x != null && typeof x !== 'object').map(([k, x]) => ({ k: FLBL[k] || k, v: String(x) }))
     if (isClaim) lines.unshift({ k: 'Says Tamil-owned', v: y.tamil_owned_confirmed ? 'Yes' : 'No' }, { k: 'Plan', v: y.plan })
@@ -792,6 +868,7 @@ export default function AdminV3() {
       d.slides = (d.slides || []).map((x) => ({ ...x }))
     } else if (type === 'cat') d = { label: '', colour: '#F5B83D', ...(item || {}) }
     else if (type === 'hood') d = { tagline: '', description: '', ...(item || {}) }
+    else if (type === 'mitem') d = { ...prefill }
     else d = { ...(item || {}) }
     setEdit({ type, id: id || item?.id || item?.key || null, draft: d, err: '', uploaded: [] })
     set({ pick: '', jpick: {}, confirm: null })
@@ -802,7 +879,7 @@ export default function AdminV3() {
     const { type, draft: d, err } = edit
     const isNew = !edit.id
     v.editing = true
-    v.formTitle = type === 'hood' ? 'Edit ' + d.name : (['site', 'sitehero', 'siteex', 'plan', 'siteperks', 'sitehow'].includes(type) ? 'Edit ' : isNew ? 'New ' : 'Edit ') + NOUN[type]
+    v.formTitle = type === 'hood' ? 'Edit ' + d.name : type === 'mpage' ? 'Edit page intro: ' + PAGE_NAMES[edit.id] : (['site', 'sitehero', 'siteex', 'plan', 'siteperks', 'sitehow', 'mnotice', 'mnews', 'mawards'].includes(type) ? 'Edit ' : isNew ? 'New ' : 'Edit ') + (type === 'mitem' ? MK[d._kind].one : NOUN[type])
     v.hasFormErr = !!err
     v.formErr = err
     v.saving = !!edit.saving
@@ -955,6 +1032,41 @@ export default function AdminV3() {
       f('list', 'Benefits (one per line: Title | description)', 'textarea', { full: true, req: true, ph: 'One-tap WhatsApp | Customers message you from your listing' })
     } else if (type === 'sitehow') {
       f('list', 'Steps (one per line: Title | description)', 'textarea', { full: true, req: true, ph: 'Claim | Find your business, or add it' })
+    } else if (type === 'mitem') {
+      const K = MK[d._kind]
+      if (K.hint) note(K.hint)
+      if (d._subId) note('From a reader post. Check the words and remove anything private (names, emails) before you publish. The phone number on jobs and classifieds is shown publicly, as the poster asked.')
+      for (const [k, label, kind, o = {}] of K.fields) f(k, label, kind === 'lines' || kind === 'pairs' ? 'textarea' : kind === 'url' ? 'text' : kind, o)
+      if (K.expires) f('expires_on', 'Take it down after (optional)', 'date', { hint: d._kind === 'request' || d._kind === 'job' || d._kind === 'classified' ? 'Leave empty to keep it up until you hide it. 30–60 days is usual.' : '' })
+      f('is_hidden', 'Hidden from the site', 'check')
+      if (d._kind === 'request' && edit.id) {
+        const R2 = (st.replies || []).filter((r) => r.item_id === edit.id)
+        section('Replies from businesses (' + R2.length + ')')
+        if (!R2.length) note('No replies yet.')
+        R2.forEach((r) => note(`${r.business_name} · ${fmtPhone(digits(r.phone)) || r.phone}${r.message ? ' · ' + r.message : ''} · ${ago(r.created_at)}${r.notified_at ? ' · customer emailed' : ' · NOT emailed, please pass it on'}`))
+        const sub = d._sub
+        if (sub) note(`Customer (private): ${[sub.name, sub.email, sub.phone].filter(Boolean).join(' · ')}`)
+      }
+    } else if (type === 'mpage') {
+      f('kick', 'Small label above the title', 'text')
+      f('ta', 'Tamil word', 'text')
+      f('title', 'Title', 'text', { full: true, req: true })
+      f('lead', 'Intro text', 'textarea', { full: true, req: true })
+    } else if (type === 'mnotice') {
+      f('requests', 'Customer requests (privacy note)', 'textarea', { full: true })
+      f('creators', 'Creators (ad label rules)', 'textarea', { full: true })
+      f('partners', 'Trusted partners (referral fees)', 'textarea', { full: true })
+      f('sponsored', 'Advertise (sponsored labels)', 'textarea', { full: true })
+    } else if (type === 'mnews') {
+      f('t', 'Title', 'text', { full: true, req: true })
+      f('d', 'Text', 'textarea', { full: true, req: true })
+      f('sponsor', 'Presented by (sponsor name, optional)', 'text', { full: true })
+    } else if (type === 'mawards') {
+      f('year', 'Year', 'text', { req: true })
+      f('stage', 'Stage shown on the site', 'text', { req: true, ph: 'Voting is open' })
+      f('voting', 'Voting is open', 'check')
+      f('dates', 'Key dates (one per line: Label: date)', 'textarea', { full: true, ph: 'Nominations: Oct 1–31' })
+      f('cats', 'Categories (one per line: code | name | keywords | leave out | sponsor)', 'textarea', { full: true, req: true, hint: 'The code never changes once voting starts (votes are stored under it). Nominees are the 4 best-ranked live businesses matching the keywords.' })
     }
     v.formFields = F
 
@@ -1173,8 +1285,34 @@ export default function AdminV3() {
         need(d.tagline.trim(), 'Add a tagline.')
         await run(sb().from('neighbourhoods').update({ tagline: d.tagline.trim(), description: d.description.trim() }).eq('key', id))
         finish(`${d.name} saved`, ['hoods'])
+      } else if (type === 'mitem') {
+        const kind = d._kind, K = MK[kind], prev = id ? (st.mkt || []).find((x) => x.id === id) : null
+        const data = fromDraft(kind, d, prev ? { id: prev.data?.id } : {})
+        need(!d.expires_on || /^\d{4}-\d{2}-\d{2}$/.test(d.expires_on), 'Pick a full date.')
+        if (K.slugFrom && !data.id) {
+          let key = slugify(data[K.slugFrom]).slice(0, 40) || kind, n = 2
+          while (mkOf(kind).some((x) => x.data?.id === key)) key = slugify(data[K.slugFrom]).slice(0, 36) + '-' + n++
+          data.id = key
+        }
+        if (!data.id) delete data.id
+        const row = { kind, data, slug: data.id || slugify(K.title(data, (x) => x, (x) => x) || '').slice(0, 60), is_hidden: !!d.is_hidden, expires_on: d.expires_on || null }
+        if (id) await run(sb().from('market_items').update({ ...row, updated_at: new Date().toISOString() }).eq('id', id))
+        else await run(sb().from('market_items').insert({ ...row, sort: mkOf(kind).length, submission_id: d._subId || null }))
+        if (d._subId) await run(sb().from('submissions').update({ status: 'approved' }).eq('id', d._subId))
+        finish(`${(K.title(data, (x) => x, (x) => bySlug[x]?.name || x) || K.one)} saved`, ['mkt', ...(d._subId ? ['subs'] : [])])
       } else {
         const put = (key, value) => run(sb().from('site_settings').upsert({ key, value }))
+        const txt = (k) => String(d[k] || '').trim()
+        if (type === 'mpage') { need(txt('title') && txt('lead'), 'Add a title and intro text.'); await put('pages', { ...(RS.pages || {}), [id]: { kick: txt('kick'), ta: txt('ta'), title: txt('title'), lead: txt('lead') } }) }
+        if (type === 'mnotice') await put('notices', { requests: txt('requests'), creators: txt('creators'), partners: txt('partners'), sponsored: txt('sponsored') })
+        if (type === 'mnews') { need(txt('t') && txt('d'), 'Add a title and text.'); await put('newsletter', { t: txt('t'), d: txt('d'), sponsor: txt('sponsor') }) }
+        if (type === 'mawards') {
+          const cats2 = txt('cats').split('\n').map((x) => x.split('|').map((y) => y.trim())).filter((x) => x[0] && x[1]).map(([cid, t2, kw, neg, sponsor]) => ({ id: slugify(cid).slice(0, 40), t: t2, kw: kw || '', ...(neg ? { neg } : {}), ...(sponsor ? { sponsor } : {}) }))
+          need(cats2.length, 'Add at least one category: code | name | keywords')
+          need(new Set(cats2.map((c) => c.id)).size === cats2.length, 'Two categories have the same code.')
+          const old = (RS.awards && RS.awards.cats) || []
+          await put('awards', { year: txt('year'), stage: txt('stage'), voting: !!d.voting, dates: txt('dates').split('\n').map((x) => x.trim()).filter(Boolean).join('|'), cats: cats2.map((c) => ({ ...(old.find((o) => o.id === c.id)?.ids ? { ids: old.find((o) => o.id === c.id).ids } : {}), ...c })) })
+        }
         if (type === 'sitehero') { need(d.a.trim() && d.b.trim() && d.sub.trim(), 'Fill in all three boxes.'); await put('hero', { a: d.a.trim(), b: d.b.trim(), sub: d.sub.trim() }) }
         if (type === 'siteex') { const L2 = d.list.split('\n').map((x) => x.trim()).filter(Boolean); need(L2.length, 'Add at least one suggestion.'); await put('searchExamples', L2) }
         if (type === 'siteperks' || type === 'sitehow') {
@@ -1187,7 +1325,7 @@ export default function AdminV3() {
           const P = settings.plans.map((p) => (p.key === id ? { key: id, name: d.name.trim(), monthly: Math.max(0, +d.monthly || 0), yearly: Math.max(0, +d.yearly || 0), description: d.description.trim(), features: String(d.features || '').split('\n').map((x) => x.trim()).filter(Boolean) } : p))
           await put('plans', P)
         }
-        finish(`${NOUN[type][0].toUpperCase() + NOUN[type].slice(1)}${type === 'plan' ? ' “' + d.name.trim() + '”' : ''} saved`, ['settings'])
+        finish(`${type === 'mpage' ? PAGE_NAMES[id] + ' intro' : NOUN[type][0].toUpperCase() + NOUN[type].slice(1)}${type === 'plan' ? ' “' + d.name.trim() + '”' : ''} saved`, ['settings'])
       }
     } catch (e) {
       fail(e.form ? e.message : friendly(e))

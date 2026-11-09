@@ -25,7 +25,7 @@ function toQuery(f, view, q) {
   return '/directory' + (s ? '?' + s : '')
 }
 
-export default function DirectoryView({ raw, nowAt, initial }) {
+export default function DirectoryView({ raw, nowAt, initial, sponsors = [] }) {
   const { site, all, byId } = useSite(raw, nowAt)
   const router = useRouter()
   const EX = site.searchExamples
@@ -77,6 +77,15 @@ export default function DirectoryView({ raw, nowAt, initial }) {
   const dirPins = dirIsMap ? pinsFor(bd, res).map((p) => ({ ...p, aria: `${p.b.name}, ${p.b.catLabel}, ${p.b.hoodName}. ${p.b.status}`, select: () => setSel(p.b.id) })) : []
   const dirHoods = hoodLabelsFor(bd, f.hood ? [hoodObj] : site.neighbourhoods)
 
+  // Sponsored spot for the chosen category: a paid sponsor first, otherwise a featured business there.
+  let dirSpon = { has: false }
+  if (f.cat) {
+    const x = sponsors.find((y) => y.slot === 'cat:' + f.cat && byId[y.bizId])
+    const b = x ? byId[x.bizId] : res.find((y) => y.feat)
+    const word = site.catByKey[f.cat].label.split(/ &| ·/)[0].toLowerCase().replace(/s$/, '')
+    if (b) dirSpon = { has: true, ...b, title: (x && x.title) || `Featured ${word} of the month` }
+  }
+
   return (
     <>
 <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "32px clamp(16px,4vw,32px) 0", display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -121,6 +130,7 @@ export default function DirectoryView({ raw, nowAt, initial }) {
 </div>
 </div>
 </section>
+<div style={{ maxWidth: "1320px", margin: "0 auto", padding: "12px clamp(16px,4vw,32px) 0" }}>{(dirSpon.has) && (<><div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center", padding: "16px", borderRadius: "22px", background: "var(--glass)", border: "1.5px solid var(--mari)", boxShadow: "0 18px 50px rgba(245,184,61,.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}><A href={dirSpon.href} aria-label={dirSpon.n} style={{ flex: "0 0 120px", height: "90px", borderRadius: "14px", backgroundColor: dirSpon.tone, backgroundImage: dirSpon.bgImg, backgroundSize: dirSpon.bgSize, backgroundPosition: "center" }}></A><div style={{ flex: "1 1 240px", minWidth: "0", display: "flex", flexDirection: "column", gap: "4px" }}><span style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}><span style={{ fontSize: "11px", fontWeight: "800", letterSpacing: ".08em", textTransform: "uppercase", padding: "5px 8px", borderRadius: "6px", background: "#F5B83D", color: "#1A1410", whiteSpace: "nowrap" }}>Sponsored</span><span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--mariText)" }}>{dirSpon.title}</span></span><A href={dirSpon.href} style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "28px", lineHeight: "1", color: "var(--ink)", textDecoration: "none" }}>{dirSpon.n}</A><span style={{ fontSize: "14px", color: "var(--ink2)", lineHeight: "1.45" }}>{dirSpon.short}</span></div><div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}><A href={dirSpon.wa} target="_blank" rel="noopener" style={{ minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 16px", borderRadius: "999px", background: "#1F7A4D", color: "#fff", fontWeight: "800", fontSize: "14px", textDecoration: "none", whiteSpace: "nowrap" }}>WhatsApp</A><A href={dirSpon.href} style={{ minHeight: "48px", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 22px", borderRadius: "999px", border: "1.5px solid var(--line2)", background: "transparent", color: "var(--ink)", fontWeight: "800", fontSize: "15px", cursor: "pointer", textDecoration: "none", whiteSpace: "nowrap", minHeight: "44px" }}>View</A></div></div></>)}</div>
 {(dirIsMap) && (<>
 <section aria-label="Map of results" style={{ maxWidth: "1320px", margin: "0 auto", padding: "16px clamp(16px,4vw,32px) 0", display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "flex-start" }}>
 <div style={{ flex: "3 1 560px", minWidth: "0", position: "relative", aspectRatio: "16/10", borderRadius: "26px", overflow: "hidden", background: "var(--glass)", border: "1px solid var(--line)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", boxShadow: "var(--shadow)" }}>

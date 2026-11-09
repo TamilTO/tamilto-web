@@ -32,7 +32,7 @@ export async function POST(req) {
   const body = await req.json().catch(() => ({}))
   const paths = Array.isArray(body.paths) ? body.paths.filter((p) => typeof p === 'string' && p.startsWith('/')).slice(0, 50) : []
   // Saved data is re-read on the next visit (business, list, story and event caches).
-  for (const t of ['site', 'articles', 'events']) revalidateTag(t)
+  for (const t of ['site', 'articles', 'events', 'market']) revalidateTag(t)
   if (!paths.length) revalidatePath('/', 'layout')
   else paths.forEach((p) => revalidatePath(p))
   return Response.json({ revalidated: paths.length ? paths : ['everything'] })

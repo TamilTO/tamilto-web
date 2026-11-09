@@ -1,5 +1,5 @@
 import DirectoryView from '@/components/tto/views/Directory'
-import { getSite } from '@/lib/data'
+import { getSite, getMarket } from '@/lib/data'
 import { indexSite, filterFromQuery } from '@/lib/tto'
 import { pageMeta } from '@/lib/seo'
 
@@ -22,8 +22,8 @@ export async function generateMetadata({ searchParams }) {
 
 export default async function Directory({ searchParams }) {
   const sp = pick(await searchParams)
-  const raw = await getSite()
+  const [raw, market] = await Promise.all([getSite(), getMarket()])
   const site = indexSite(raw)
   const initial = { q: sp.q || '', filter: filterFromQuery(sp, site), view: sp.view === 'map' ? 'map' : 'list' }
-  return <DirectoryView raw={raw} nowAt={Date.now()} initial={initial} />
+  return <DirectoryView raw={raw} nowAt={Date.now()} initial={initial} sponsors={market.sponsors} />
 }

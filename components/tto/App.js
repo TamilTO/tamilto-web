@@ -114,7 +114,7 @@ const Wordmark = ({ size = 30, slit = false }) => (
   </span>
 )
 
-const NAV = [['Directory', '/directory', ['/directory', '/b/', '/n/', '/c/', '/journey']], ['Life moments', '/journey', []], ['Events', '/events', ['/events']], ['Eat', '/eat', ['/eat']], ['Culture', '/culture', ['/culture', '/people', '/guides']]]
+const NAV = [['Directory', '/directory', ['/directory', '/b/', '/n/', '/c/']], ['Plan an event', '/plan', ['/plan', '/journey', '/v/weddings']], ['Requests', '/requests', ['/requests']], ['Events', '/events', ['/events']], ['Eat', '/eat', ['/eat']], ['Culture', '/culture', ['/culture', '/people', '/guides']], ['More', '/more', ['/more', '/v/', '/creators', '/awards', '/jobs', '/classifieds', '/deals', '/partners', '/advertise']]]
 
 export function Header() {
   const app = useApp()
@@ -129,8 +129,7 @@ export function Header() {
         <nav aria-label="Main" className="tto-nav" style={{ flex: 1, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', WebkitMaskImage: 'linear-gradient(90deg,#000 calc(100% - 24px),transparent)', maskImage: 'linear-gradient(90deg,#000 calc(100% - 24px),transparent)', paddingRight: 20 }}>
           <div style={{ display: 'flex', gap: 2, width: 'max-content', margin: '0 auto' }}>
             {NAV.map(([label, href, match]) => {
-              const cur = path === href || match.some((m) => path.startsWith(m)) || (label === 'Life moments' && path.startsWith('/journey'))
-              const on = label === 'Directory' ? cur && !path.startsWith('/journey') : cur
+              const on = path === href || match.some((m) => path.startsWith(m))
               return (
                 <Link key={href} href={href} aria-current={on ? 'page' : undefined} style={{ flexShrink: 0, whiteSpace: 'nowrap', minHeight: 40, display: 'inline-flex', alignItems: 'center', padding: '0 clamp(8px,1vw,14px)', borderRadius: 999, textDecoration: 'none', fontWeight: 800, fontSize: 'clamp(13px,1.1vw,14px)', color: on ? 'var(--bg)' : 'var(--ink)', background: on ? 'var(--ink)' : 'transparent' }}>{label}</Link>
               )
@@ -169,9 +168,10 @@ export function Footer() {
           <Link href="/business" style={{ minHeight: 48, display: 'inline-flex', alignItems: 'center', padding: '0 22px', borderRadius: 999, background: 'var(--mari)', color: '#1A1410', fontWeight: 800, textDecoration: 'none' }}>List your business, free</Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,160px),1fr))', gap: 22, borderTop: '1px solid var(--line)', paddingTop: 22 }}>
-          <div style={col}><strong style={fh}>Find</strong><Link href="/directory" style={fl}>Directory</Link><Link href="/directory?view=map" style={fl}>Live map</Link><Link href="/journey" style={fl}>Life moments</Link></div>
+          <div style={col}><strong style={fh}>Find</strong><Link href="/directory" style={fl}>Directory</Link><Link href="/directory?view=map" style={fl}>Live map</Link><Link href="/journey" style={fl}>Life moments</Link><Link href="/plan" style={fl}>Plan an event</Link><Link href="/requests" style={fl}>Customer requests</Link></div>
+          <div style={col}><strong style={fh}>Community</strong><Link href="/jobs" style={fl}>Jobs</Link><Link href="/classifieds" style={fl}>Classifieds</Link><Link href="/deals" style={fl}>Deals</Link><Link href="/creators" style={fl}>Creators</Link><Link href="/awards" style={fl}>Best of awards</Link></div>
           <div style={col}><strong style={fh}>Read</strong><Link href="/eat" style={fl}>Eat</Link><Link href="/events" style={fl}>Events</Link><Link href="/culture" style={fl}>Culture</Link><Link href="/submit" style={fl}>Submit a tip</Link></div>
-          <div style={col}><strong style={fh}>Businesses</strong><Link href="/business#claim" style={fl}>Claim your listing</Link><Link href="/business#pricing" style={fl}>Pricing</Link><Link href="/advertise" style={fl}>Advertise</Link></div>
+          <div style={col}><strong style={fh}>Businesses</strong><Link href="/business#claim" style={fl}>Claim your listing</Link><Link href="/business#pricing" style={fl}>Pricing</Link><Link href="/advertise" style={fl}>Advertise</Link><Link href="/partners" style={fl}>Trusted partners</Link></div>
           <div style={col}><strong style={fh}>TamilTO</strong><Link href="/about" style={fl}>About</Link><Link href="/editorial-policy" style={fl}>Editorial policy</Link><a href="mailto:hello@tamilto.com" style={fl}>hello@tamilto.com</a></div>
           <div style={col}><strong style={fh}>Follow</strong><a href="https://instagram.com/tamilto" target="_blank" rel="noopener noreferrer" style={fl}>Instagram</a><a href="https://tiktok.com/@tamilto" target="_blank" rel="noopener noreferrer" style={fl}>TikTok</a></div>
         </div>

@@ -377,6 +377,7 @@ h1, h2, h3, p { margin: 0; }
 .x2:hover { transform:translateY(-4px) !important; border-color:var(--line2) !important; box-shadow:var(--shadow) !important; color:var(--ink) !important }
 .x3:hover { transform:translateY(-4px) !important; color:var(--ink) !important }
 .x4:hover { transform:translateY(-4px) !important; border-color:var(--line2) !important; color:var(--ink) !important }
+.x5:hover { transform:translateY(-3px) !important }
 
 /* Phones: the menu gets its own scrollable row under the logo and buttons. */
 @media (max-width: 720px) {
