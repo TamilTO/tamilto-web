@@ -15,10 +15,10 @@ export const useApp = () => useContext(Ctx)
 const load = (k, d) => { try { const v = localStorage.getItem('tto2-' + k); return v ? JSON.parse(v) : d } catch { return d } }
 const save = (k, v) => { try { localStorage.setItem('tto2-' + k, JSON.stringify(v)) } catch {} }
 
-/** First-party activity tracking (step 20 stores these on the server). */
-export function track(kind, businessId = '', extra = '') {
+/** First-party activity counting (stored without names, phone numbers or IP addresses). */
+export function track(kind, businessId = '', extra = '', ref = '') {
   try {
-    const body = JSON.stringify({ kind, businessId, extra, path: location.pathname })
+    const body = JSON.stringify({ kind, businessId, extra, ref, path: location.pathname })
     if (navigator.sendBeacon) navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }))
   } catch {}
 }
@@ -84,10 +84,13 @@ export function AppProvider({ index, children }) {
     document.addEventListener('click', onClk, true)
     return () => document.removeEventListener('click', onClk, true)
   }, [index])
+  const lastPath = useRef('')
   useEffect(() => {
     const p = pathname.split('/').filter(Boolean)
-    if (p[0] === 'b') track('view', p[1], document.referrer ? new URL(document.referrer, location.href).pathname : 'direct')
-    else track('view', '', pathname)
+    // Where this view came from: the previous TamilTO page, or the website/app that sent them here.
+    const ref = lastPath.current ? location.origin + lastPath.current : document.referrer
+    lastPath.current = pathname
+    track('view', p[0] === 'b' ? p[1] : '', '', ref)
   }, [pathname])
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') { if (story) setStory(null); else if (quote) setQuote(null); else if (drawer) setDrawer(false) } }

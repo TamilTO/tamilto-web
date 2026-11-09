@@ -6,10 +6,18 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import View from './View'
 import { sb, run, friendly, slugify, digits, fmtPhone, uploadPhoto, removeFiles, refreshSite, mediaUrl, torontoToISO, isoToToronto, ago, when, CONFIGURED } from './lib'
 import { describe } from './describe'
+import { downloadXlsx, printDoc, pdfHead, pdfCards, pdfBars, pdfTable, pdfFoot, nf } from './reports'
 import { markupToBlocks, blocksToMarkup } from '@/lib/body-markup.mjs'
 import { HERO, PERKS, HOW, PLANS, EXAMPLES, withDefaults } from '@/lib/site-defaults.mjs'
 
 const PAGE = 25
+const KL = { view: 'Profile views', whatsapp: 'WhatsApp taps', call: 'Calls', directions: 'Directions', website: 'Website clicks', social: 'Social media clicks', reviews: 'Google reviews clicks', email: 'Emails', save: 'Saves to shortlists', share: 'Shares', quote: 'Quote requests', listing: 'Listing sign-ups' }
+const KC = { view: '#F5B83D', whatsapp: '#62D394', call: '#5EC2D1', directions: '#9C86F0', website: '#6EA8F0', social: '#E2629B', reviews: '#4285F4', email: '#A5C25A', save: '#FF6B7D', share: '#F59A3D', quote: '#D4173A', listing: '#4FC9B5', search: '#CDBFAC' }
+const CONTACT = ['whatsapp', 'call', 'directions', 'website', 'social', 'reviews', 'email', 'quote']
+const PGL = { home: 'Home', directory: 'Directory & search', search: 'Search', b: 'Business profiles', events: 'Events', eat: 'Eat', culture: 'Culture', people: 'People', guides: 'Guides', journey: 'Life moments', n: 'Neighbourhood pages', c: 'Cousin-approved lists', business: 'For businesses', direct: 'Direct link / WhatsApp share', google: 'Google search', 'search engine': 'Other search engines', admin: 'Admin' }
+const PG = (p) => PGL[String(p || 'home')] || (/\./.test(p) ? 'From ' + p : 'Other pages')
+const DAY = 864e5
+const ACT_START = '2026-01-01T05:00:00Z'
 const MINPH = 3
 const TONES = [['Kumkum', '#8C2A1C'], ['Turmeric', '#9A5416'], ['Curry leaf', '#2F5D50'], ['Clay', '#6B3A2E'], ['Peacock', '#1F4E5F'], ['Brass', '#7A5A12'], ['Kathakali', '#4A3B6B'], ['Lotus', '#8A3B52']]
 const EV_TYPES = ['Festival', 'Culture', 'Concert', 'Food', 'Film', 'Sports', 'Community']
@@ -79,6 +87,8 @@ export default function AdminV3() {
   const [edit, setEdit] = useState(null)
   const [toast, setToast] = useState('')
   const [logPage, setLogPage] = useState({ rows: [], count: 0 })
+  const [act, setAct] = useState({})   // website activity, by period
+  const [bact, setBact] = useState({}) // one business's activity, by business + period
   const tRef = useRef()
   const recovering = useRef(false)
   const storyRef = useRef()
@@ -135,6 +145,34 @@ export default function AdminV3() {
       .then((r) => setLogPage({ rows: r.data, count: r.count }))
       .catch((e) => flash('⚠ ' + e.message))
   }, [s.tab, s.page, s.phase, flash, st?.loadedAt])
+
+  // ---------- activity (Website activity & Business reports) ----------
+  const range = s.range ?? 30
+  const period = useCallback((R) => {
+    const to = new Date(Date.now() + 60e3)
+    const from = R ? new Date(to.getTime() - R * DAY) : new Date(ACT_START)
+    return { from: from.toISOString(), to: to.toISOString(), prevFrom: R ? new Date(from.getTime() - R * DAY).toISOString() : null }
+  }, [])
+  useEffect(() => {
+    if (s.phase !== 'in' || !['stats', 'reports'].includes(s.tab) || act[range]?.cur) return
+    const P = period(range)
+    Promise.all([
+      run(sb().rpc('activity_summary', { p_from: P.from, p_to: P.to })),
+      P.prevFrom ? run(sb().rpc('activity_summary', { p_from: P.prevFrom, p_to: P.from })) : null,
+    ]).then(([cur, prev]) => setAct((a) => ({ ...a, [range]: { cur, prev, P, at: Date.now() } })))
+      .catch((e) => setAct((a) => ({ ...a, [range]: { err: /activity_summary/.test(e.message) ? 'Run 04-activity.sql in Supabase first (checklist step 20).' : e.message } })))
+  }, [s.phase, s.tab, range, act, period])
+  useEffect(() => {
+    const id = s.rbiz, k = `${id}|${range}`
+    if (s.phase !== 'in' || s.tab !== 'reports' || !id || bact[k]) return
+    const P = period(range)
+    setBact((a) => ({ ...a, [k]: { loading: true } }))
+    Promise.all([
+      run(sb().rpc('business_activity', { p_business: id, p_from: P.from, p_to: P.to })),
+      P.prevFrom ? run(sb().rpc('business_activity', { p_business: id, p_from: P.prevFrom, p_to: P.from })) : null,
+    ]).then(([cur, prev]) => setBact((a) => ({ ...a, [k]: { cur, prev } })))
+      .catch((e) => setBact((a) => ({ ...a, [k]: { err: e.message } })))
+  }, [s.phase, s.tab, s.rbiz, range, bact, period])
 
   // ---------- view model ----------
   const v = {
@@ -227,16 +265,13 @@ export default function AdminV3() {
   v.isOverview = t === 'overview'
   v.isData = t === 'data'
   v.isTeam = t === 'team'
-  v.isStats = t === 'stats' || t === 'reports'
+  v.isStats = t === 'stats'
+  v.isReports = t === 'reports'
   v.isInbox = t === 'inbox' || t === 'quotes'
-  v.isList = !v.isOverview && !v.isData && !v.isStats && !v.isInbox && !v.isTeam
+  v.isList = !v.isOverview && !v.isData && !v.isStats && !v.isReports && !v.isInbox && !v.isTeam
   v.isBizTab = t === 'biz'
   v.isStoryTab = t === 'story'
   v.isArtTab = t === 'article'
-  v.statsTitle = t === 'stats' ? 'Website activity' : 'Business reports'
-  v.statsText = t === 'stats'
-    ? 'Page views, searches, WhatsApp taps, calls, directions, saves, shares and quote requests will show here once the website starts recording them (checklist step 20). Nothing personal is stored: no names, phone numbers or IP addresses.'
-    : 'Monthly PDF and Excel reports for each business (views, WhatsApp taps, calls and more) switch on with website activity in checklist step 20.'
 
   // ----- overview -----
   const hiddenReady = biz.filter((b) => b.is_hidden && b.photos.length >= MINPH).length
@@ -511,7 +546,7 @@ export default function AdminV3() {
     }
     else if (y._k === 'event') approve = () => {
       set({ tab: 'event' })
-      openEdit('event', null, null, { title: y.title || d.title || d.event || '', venue: d.venue || d.location || '', address: d.address || '', ticket_url: d.link || d.url || d.tickets || '', description: d.description || d.details || d.message || '', price: String(d.price || '0').replace(/[^\d.]/g, '') || '0', _subId: y.id, photos: y.photo_path ? [{ storage_path: y.photo_path, alt: y.title }] : [] })
+      openEdit('event', null, null, { title: y.title || d.title || d.event || '', venue: d.venue || d.location || '', ticket_url: d.ticketUrl || d.link || d.url || d.tickets || '', description: d.description || d.details || d.message || '', address: d.address || '', price: String(d.price || '0').replace(/[^\d.]/g, '') || '0', _subId: y.id, photos: y.photo_path ? [{ storage_path: y.photo_path, alt: y.title }] : [] })
       flash('Pick the date and time, then Save & publish.')
     }
     const lines = Object.entries(d).filter(([k, x]) => k !== 'photos' && x !== '' && x != null && typeof x !== 'object').map(([k, x]) => ({ k: FLBL[k] || k, v: String(x) }))
@@ -530,6 +565,121 @@ export default function AdminV3() {
       hasWa: !!wa(phone), wa: wa(phone, `Hi ${y.contact_name || y.name || ''}, this is TamilTO about your ${SUBKIND[y._k]?.toLowerCase() || 'message'}.`), hasMail: !!y.email, mail: 'mailto:' + y.email,
       del: s.confirm === key ? remove('Submission', () => run(sb().from(table).delete().eq('id', y.id)), [isClaim ? 'claims' : 'subs']) : () => { set({ confirm: key }); flash('Click Delete again to remove it for good') },
     }
+  }
+
+  // ----- website activity & business reports -----
+  v.an = { ranges: [], cards: [], bars: [], topBiz: [], actions: [], pages: [], searches: [], devices: [], areas: [] }
+  v.rp = { list: [], cards: [], bars: [], sources: [], recent: [] }
+  if (v.isStats || v.isReports) analytics(v)
+  function analytics(v) {
+    const R = range, A = act[R] || {}
+    const an = v.an
+    an.ranges = [[7, '7 days'], [30, '30 days'], [90, '90 days'], [0, 'All time']].map(([k, l]) => ({ l, sel: R === k ? 'true' : 'false', bg: R === k ? 'var(--ink)' : 'transparent', fg: R === k ? 'var(--bg)' : 'var(--ink)', onClick: () => set({ range: k }) }))
+    an.refresh = () => { setAct({}); setBact({}); flash('Activity refreshed') }
+    an.demo = false
+    an.gap = R > 60 || !R ? '1px' : R > 30 ? '2px' : '4px'
+    if (A.err) { an.period = A.err; an.empty = true; return }
+    if (!A.cur) { an.period = 'Loading…'; return }
+    const C = A.cur, P = A.prev
+    const fmtD = (k) => new Date(k + 'T12:00:00').toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' })
+    const firstDay = C.days[0]?.d || today
+    const nd = R || Math.min(120, Math.max(7, Math.round((new Date(today) - new Date(firstDay)) / DAY) + 1))
+    const days = []
+    for (let i = nd - 1; i >= 0; i--) { const k = new Date(new Date(today + 'T12:00:00').getTime() - i * DAY).toISOString().slice(0, 10); days.push({ k, d: fmtD(k) }) }
+    const dayMap = Object.fromEntries(C.days.map((x) => [x.d, x]))
+    const per = R ? `Last ${R} days · ${days[0].d} – ${days[days.length - 1].d}` : `All time · since ${fmtD(firstDay)}`
+    an.period = per
+    an.empty = !C.total
+    an.has = C.total > 0
+    if (!an.has) return
+    const k = (S, kind) => (S?.kinds || {})[kind] || 0
+    const contacts = (S) => CONTACT.reduce((n, c) => n + k(S, c), 0)
+    const delta = (a, b) => {
+      if (!R) return { d: '', dc: 'var(--ink2)' }
+      if (!b) return { d: a ? 'new this period' : '—', dc: 'var(--ink2)' }
+      const p = Math.round(((a - b) / b) * 100)
+      return { d: (p >= 0 ? '▲ ' : '▼ ') + Math.abs(p) + '% vs previous ' + R + ' days', dc: p >= 0 ? 'var(--green)' : 'var(--red)' }
+    }
+    const lblEvery = Math.ceil(nd / 10)
+    const metrics = [['Page views', k(C, 'view'), k(P, 'view')], ['Visitors', C.visitors, P?.visitors], ['Business profile views', C.bizViews, P?.bizViews], ['Contacts to businesses', contacts(C), contacts(P)], ['WhatsApp taps', k(C, 'whatsapp'), k(P, 'whatsapp')], ['Calls', k(C, 'call'), k(P, 'call')], ['Quote requests', k(C, 'quote'), k(P, 'quote')], ['Searches', k(C, 'search'), k(P, 'search')]]
+    an.cards = metrics.map(([l, a, b]) => ({ l, v: nf(a), ...delta(a, b || 0) }))
+    const dv = days.map((d) => dayMap[d.k]?.views || 0), du = days.map((d) => dayMap[d.k]?.visitors || 0)
+    const mx = Math.max(1, ...dv)
+    an.bars = days.map((d, i) => ({ h: Math.round((dv[i] / mx) * 100) + '%', c: 'var(--mari)', l: i % lblEvery === 0 ? d.d : '', tip: `${d.d}: ${dv[i]} page views, ${du[i]} visitors` }))
+    const pk = dv.indexOf(Math.max(...dv))
+    an.peak = dv[pk] ? `Busiest day: ${days[pk].d} (${nf(dv[pk])} views)` : ''
+    const toBars = (T, colr) => { const m = Math.max(1, ...T.map((x) => x[1])); return T.map(([l, n], i) => ({ l, v: nf(n), w: Math.round((n / m) * 100) + '%', c: typeof colr === 'function' ? colr(l, i) : colr })) }
+    const BZ = (id) => byId[id]
+    const bizT = C.biz.filter((x) => BZ(x.id))
+    an.topBiz = bizT.slice(0, 10).map((x, i) => { const b = BZ(x.id); return { i: i + 1, n: b.name, sub: `${nf(x.kinds.view || 0)} views · ${nf(CONTACT.reduce((n, c) => n + (x.kinds[c] || 0), 0))} contacts · ${catOf(b.category_key).label}`, v: nf(x.total), open: () => set({ tab: 'reports', rbiz: x.id, rq: '' }) } })
+    an.actions = toBars(Object.entries(C.kinds).filter(([kk]) => kk !== 'view' && kk !== 'search').sort((a, b) => b[1] - a[1]).map(([kk, n]) => [KL[kk] || kk, n]), (l) => KC[Object.keys(KL).find((kk) => KL[kk] === l)] || 'var(--mari)')
+    const pages = {}
+    if (C.bizViews) pages['Business profiles'] = C.bizViews
+    for (const x of C.pages) { const l = PG(x.p || 'home'); pages[l] = (pages[l] || 0) + x.n }
+    const pageT = Object.entries(pages).sort((a, b) => b[1] - a[1])
+    an.pages = toBars(pageT.slice(0, 8), 'var(--teal)')
+    an.searches = C.searches.slice(0, 10).map((x) => ({ l: x.q, v: nf(x.n) }))
+    an.noSearch = !C.searches.length
+    an.devices = toBars([['Mobile', C.devices.m || 0], ['Desktop', C.devices.d || 0]].filter((x) => x[1]).sort((a, b) => b[1] - a[1]), (l) => (l === 'Mobile' ? 'var(--red)' : 'var(--teal)'))
+    const areas = {}
+    for (const x of bizT) { const h = hoodOf(BZ(x.id).neighbourhood_key).name; areas[h] = (areas[h] || 0) + x.total }
+    an.areas = toBars(Object.entries(areas).sort((a, b) => b[1] - a[1]), 'var(--mari)')
+    const stamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Toronto' })
+    an.xls = () => downloadXlsx(`tamilto-website-activity-${today}.xlsx`, [
+      { name: 'Summary', rows: [['TamilTO website activity'], ['Period', per], ['Generated', stamp], ['Counts include no personal information.'], [], ['Metric', 'This period', R ? 'Previous period' : ''], ...metrics.map(([l, a, b]) => [l, a || 0, R ? b || 0 : '']), [], ['Top searches', 'Count'], ...C.searches.slice(0, 50).map((x) => [x.q, x.n]), [], ['Pages visited', 'Views'], ...pageT] },
+      { name: 'By day', rows: [['Date', 'Page views', 'Visitors', 'Profile views', 'WhatsApp', 'Calls', 'Directions', 'Quote requests', 'Searches'], ...days.map((d) => { const x = dayMap[d.k] || {}; return [d.k, x.views || 0, x.visitors || 0, x.bviews || 0, x.whatsapp || 0, x.call || 0, x.directions || 0, x.quote || 0, x.search || 0] })] },
+      { name: 'Businesses', rows: [['Business', 'Category', 'Area', 'Profile views', 'Contacts', 'Total activity'], ...bizT.map((x) => { const b = BZ(x.id); return [b.name, catOf(b.category_key).label, hoodOf(b.neighbourhood_key).name, x.kinds.view || 0, CONTACT.reduce((n, c) => n + (x.kinds[c] || 0), 0), x.total] })] },
+    ])
+    an.pdf = () => { flash('In the print window, choose “Save as PDF”.'); printDoc('TamilTO website activity', pdfHead('Website activity report', 'Website activity', per) + pdfCards(metrics.map(([l, a, b]) => ({ l, v: nf(a), d: delta(a, b || 0).d }))) + pdfBars('Page views per day', days.map((d, i) => ({ d: d.d, v: dv[i] }))) + pdfTable('Most active businesses', ['Business', 'Profile views', 'Contacts', 'Total activity'], bizT.slice(0, 12).map((x) => [BZ(x.id).name, nf(x.kinds.view || 0), nf(CONTACT.reduce((n, c) => n + (x.kinds[c] || 0), 0)), nf(x.total)])) + pdfTable('Top searches', ['Search', 'Count'], C.searches.slice(0, 10).map((x) => ['“' + x.q + '”', nf(x.n)])) + pdfTable('Pages visited', ['Section', 'Views'], pageT.slice(0, 8).map(([l, n]) => [l, nf(n)])) + pdfFoot()) }
+
+    // business reports
+    const rp = v.rp
+    const actMap = Object.fromEntries(bizT.map((x) => [x.id, x.total]))
+    const q = String(s.rq || '').trim().toLowerCase()
+    const list = q.length >= 2
+      ? biz.filter((b) => (b.name + ' ' + (b.listed_as || '') + ' ' + (b.city || '')).toLowerCase().includes(q)).sort((a, b) => (actMap[b.id] || 0) - (actMap[a.id] || 0)).slice(0, 40)
+      : bizT.slice(0, 40).map((x) => BZ(x.id))
+    const selId = s.rbiz && byId[s.rbiz] ? s.rbiz : list[0]?.id
+    if (selId && selId !== s.rbiz && v.isReports) setTimeout(() => set({ rbiz: selId }), 0)
+    Object.assign(rp, {
+      q: s.rq || '', onQ: (e) => set({ rq: e.target.value }), listLabel: q.length >= 2 ? `${list.length} match${list.length === 1 ? '' : 'es'}` : 'Most active in this period',
+      list: list.map((b) => ({ n: b.name, sub: `${catOf(b.category_key).label} · ${b.city || hoodOf(b.neighbourhood_key).name}`, v: nf(actMap[b.id] || 0), sel: b.id === selId ? 'true' : 'false', border: b.id === selId ? 'var(--mari)' : 'var(--line)', bg: b.id === selId ? 'var(--glass2)' : 'transparent', pick: () => set({ rbiz: b.id }) })),
+    })
+    rp.xlsAll = () => downloadXlsx(`tamilto-all-businesses-${today}.xlsx`, [{ name: 'All businesses', rows: [['TamilTO business activity, all businesses'], ['Period', per], ['Generated', stamp], [], ['Business', 'Category', 'Area', 'Status', 'Profile views', 'WhatsApp', 'Calls', 'Directions', 'Website & social', 'Saves', 'Shares', 'Quote requests', 'Total contacts'], ...biz.map((b) => { const K = C.biz.find((x) => x.id === b.id)?.kinds || {}; const g = (kk) => K[kk] || 0; return [b.name, catOf(b.category_key).label, hoodOf(b.neighbourhood_key).name, b.is_hidden ? 'Hidden' : 'Live', g('view'), g('whatsapp'), g('call'), g('directions'), g('website') + g('social') + g('reviews') + g('email'), g('save'), g('share'), g('quote'), CONTACT.reduce((n, c) => n + g(c), 0)] }).sort((x, y) => y[4] - x[4] || y[12] - x[12])] }])
+    const b = selId && byId[selId]
+    const D = b && bact[`${b.id}|${R}`]
+    rp.none = !b
+    rp.has = !!b
+    if (!b) return
+    const kk = (S, kind) => (S?.kinds || {})[kind] || 0
+    const web = (S) => kk(S, 'website') + kk(S, 'social') + kk(S, 'reviews') + kk(S, 'email')
+    const BC = D?.cur, BP = D?.prev
+    const views = kk(BC, 'view'), ct = CONTACT.reduce((n, c) => n + kk(BC, c), 0)
+    const bm = [['Profile views', views, kk(BP, 'view')], ['WhatsApp taps', kk(BC, 'whatsapp'), kk(BP, 'whatsapp')], ['Calls', kk(BC, 'call'), kk(BP, 'call')], ['Directions', kk(BC, 'directions'), kk(BP, 'directions')], ['Website & social', web(BC), web(BP)], ['Saves', kk(BC, 'save'), kk(BP, 'save')], ['Shares', kk(BC, 'share'), kk(BP, 'share')], ['Quote requests', kk(BC, 'quote'), kk(BP, 'quote')]]
+    const sub = `${catOf(b.category_key).label} · ${b.city || hoodOf(b.neighbourhood_key).name}`
+    Object.assign(rp, { n: b.name, sub, contact: [b.address, fmtPhone(b.phone || b.cell), b.email].filter(Boolean).join(' · '), view: b.is_hidden ? '/admin' : '/b/' + b.slug })
+    if (!BC) { rp.cards = [{ l: D?.err ? 'Could not load' : 'Loading…', v: '…', d: D?.err || '', dc: 'var(--ink2)' }]; rp.noSrc = true; rp.noRecent = true; return }
+    const rate = views ? Math.round((ct / views) * 100) + '%' : '—'
+    rp.cards = [...bm.map(([l, a, p]) => ({ l, v: nf(a), ...delta(a, p) })), { l: 'Contact rate', v: rate, d: 'contacts per profile view', dc: 'var(--ink2)' }]
+    const bd = Object.fromEntries(BC.days.map((x) => [x.d, x.kinds]))
+    const vv = days.map((d) => (bd[d.k] || {}).view || 0), cc = days.map((d) => CONTACT.reduce((n, c) => n + ((bd[d.k] || {})[c] || 0), 0))
+    const bmx = Math.max(1, ...vv.map((x, i) => Math.max(x, cc[i])))
+    rp.bars = days.map((d, i) => { const top = Math.max(vv[i], cc[i]); return { h: Math.round((top / bmx) * 100) + '%', ch: top ? Math.round((cc[i] / top) * 100) + '%' : '0%', l: i % lblEvery === 0 ? d.d : '', tip: `${d.d}: ${vv[i]} views, ${cc[i]} contacts` } })
+    const srcT = {}
+    for (const x of BC.sources) { const l = PG(x.r); srcT[l] = (srcT[l] || 0) + x.n }
+    const srcList = Object.entries(srcT).sort((a, c) => c[1] - a[1])
+    rp.sources = toBars(srcList, 'var(--teal)')
+    rp.noSrc = !srcList.length
+    const RL = { view: 'Viewed the listing', whatsapp: 'Tapped WhatsApp', call: 'Tapped call', directions: 'Opened directions', website: 'Visited website', social: 'Opened social media', reviews: 'Opened Google reviews', email: 'Sent an email', save: 'Saved to a shortlist', share: 'Shared the listing', quote: 'Sent a quote request', listing: 'Claimed the listing' }
+    rp.recent = BC.recent.map((e) => ({ l: (RL[e.kind] || e.kind) + (e.kind === 'view' ? ' · ' + (PG(e.ref).startsWith('From ') ? '' : 'from ') + PG(e.ref).replace(/^From /, 'from ').replace(/^(?!from )./, (c) => c.toLowerCase()) : '') + (e.device === 'm' ? ' · mobile' : ' · desktop'), t: ago(e.at), c: KC[e.kind] || 'var(--ink2)' }))
+    rp.noRecent = !BC.recent.length
+    const fname = b.slug
+    rp.xls = () => downloadXlsx(`tamilto-report-${fname}-${today}.xlsx`, [
+      { name: 'Report', rows: [['TamilTO business activity report'], ['Business', b.name], ['Category', catOf(b.category_key).label], ['Area', b.city || hoodOf(b.neighbourhood_key).name], ['Period', per], ['Generated', stamp], [], ['Metric', 'This period', R ? 'Previous period' : ''], ...bm.map(([l, a, p]) => [l, a, R ? p : '']), ['Contact rate', rate], [], ['How people found them', 'Views'], ...srcList] },
+      { name: 'By day', rows: [['Date', 'Profile views', 'WhatsApp', 'Calls', 'Directions', 'Website & social', 'Saves', 'Shares', 'Quote requests'], ...days.map((d) => { const X = { kinds: bd[d.k] || {} }; return [d.k, kk(X, 'view'), kk(X, 'whatsapp'), kk(X, 'call'), kk(X, 'directions'), web(X), kk(X, 'save'), kk(X, 'share'), kk(X, 'quote')] })] },
+    ])
+    rp.pdf = () => { flash('In the print window, choose “Save as PDF”.'); printDoc(b.name + ' · TamilTO report', pdfHead('Business activity report', b.name, sub + ' · ' + per) + pdfCards(rp.cards.map((c) => ({ l: c.l, v: c.v, d: c.d }))) + pdfBars('Profile views & contacts per day', days.map((d, i) => ({ d: d.d, v: Math.max(vv[i], cc[i]) })), cc) + pdfTable('How people found them', ['Source', 'Views'], srcList.map(([l, n]) => [l, nf(n)])) + pdfTable('By day', ['Date', 'Views', 'Contacts'], days.filter((d, i) => vv[i] || cc[i]).map((d) => [d.d, nf((bd[d.k] || {}).view || 0), nf(CONTACT.reduce((n, c) => n + ((bd[d.k] || {})[c] || 0), 0))])) + pdfFoot()) }
   }
 
   // ----- team -----
@@ -578,6 +728,7 @@ export default function AdminV3() {
 
   // ---------- editor ----------
   function prefillBusiness(d, extra) {
+    d = { ...d, cat: d.cat || d.category, area: d.area || d.neighbourhood, addr: d.addr || d.address, web: d.web || d.website, short: d.short || d.details }
     const cat = cats.find((c) => c.key === d.cat || c.label.toLowerCase() === String(d.cat || '').toLowerCase())
     const hood = hoods.find((h) => h.key === d.area || h.name.toLowerCase() === String(d.area || '').toLowerCase())
     return {

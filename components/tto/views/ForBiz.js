@@ -2,6 +2,7 @@
 // For businesses: perks, claim or add a listing, pricing. Layout ported from TamilTO 3.0 (FOR BUSINESSES screen).
 // The claim goes to TamilTO's review queue. Nothing is published, and nothing is charged, until the team checks it.
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { shrinkForm } from '@/lib/shrink'
 import A from '../A'
 import { useSite } from '../useSite'
 import { enc, fmtPhone, QR } from '@/lib/tto'
@@ -71,6 +72,7 @@ export default function ForBizView({ raw, nowAt, claimId }) {
       fd.set('tamilOwnedConfirmed', 'yes')
       setC({ sending: true, sendErr: '' })
       try {
+        await shrinkForm(fd, 'photos')
         const r = await fetch('/api/claims', { method: 'POST', body: fd })
         const j = await r.json().catch(() => ({}))
         if (!r.ok) throw new Error(j.error || 'We couldn’t send that. Please try again.')

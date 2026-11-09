@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { BUSINESS_CATEGORIES, NEIGHBOURHOODS } from '@/lib/site'
 import { track } from '@/lib/client'
+import { shrinkForm } from '@/lib/shrink'
 
 const DONE = {
   tip: 'Your tip is in our review queue. A real editor reads every one — if we run it, we’ll let you know.',
@@ -42,6 +43,7 @@ export default function SubmitForm({ kind }) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
     fd.set('kind', kind)
+    await shrinkForm(fd, 'photo')
     const photo = fd.get('photo')
     if (photo && photo.size > 4 * 1024 * 1024) { setState('error'); setError('That photo is over 4 MB — try a smaller one.'); return }
     setState('loading'); setError('')
