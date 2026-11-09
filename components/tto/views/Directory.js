@@ -105,17 +105,17 @@ export default function DirectoryView({ raw, nowAt, initial, sponsors = [] }) {
 <button type="button" onClick={clearAll} style={{ minHeight: "36px", padding: "0 8px", border: "0", background: "none", color: "var(--ink2)", fontSize: "13px", fontWeight: "700", textDecoration: "underline", cursor: "pointer" }}>Clear all</button>
 </div>
 </>)}
-<div role="group" aria-label="Quick filters" style={{ display: "flex", gap: "8px", overflowX: "auto", scrollbarWidth: "none", padding: "2px 0" }}>
+<div role="group" aria-label="Quick filters" className="chiprow" style={{ display: "flex", gap: "8px", padding: "2px 0" }}>
 {(toggles).map((c, _k2) => (<Fragment key={_k2}>
 <button type="button" onClick={c.onClick} aria-pressed={c.pressed} style={{ flexShrink: "0", whiteSpace: "nowrap", minHeight: "42px", display: "inline-flex", alignItems: "center", gap: "8px", padding: "0 14px", borderRadius: "999px", border: `1.5px solid ${c.border}`, background: c.bg, color: c.fg, fontWeight: "700", fontSize: "14px", cursor: "pointer" }}><span style={{ width: "8px", height: "8px", borderRadius: "99px", background: c.dot }}></span>{c.label}</button>
 </Fragment>))}
 </div>
-<div role="group" aria-label="Category" style={{ display: "flex", gap: "8px", overflowX: "auto", scrollbarWidth: "none", padding: "2px 0" }}>
+<div role="group" aria-label="Category" className="chiprow" style={{ display: "flex", gap: "8px", padding: "2px 0" }}>
 {(catChips).map((c, _k3) => (<Fragment key={_k3}>
 <button type="button" onClick={c.onClick} aria-pressed={c.pressed} style={{ flexShrink: "0", whiteSpace: "nowrap", minHeight: "40px", display: "inline-flex", alignItems: "center", gap: "8px", padding: "0 14px", borderRadius: "999px", border: `1px solid ${c.border}`, background: c.bg, color: c.fg, fontWeight: "600", fontSize: "13px", cursor: "pointer" }}><span style={{ width: "8px", height: "8px", borderRadius: "99px", background: c.dot }}></span>{c.label} <span style={{ opacity: ".65" }}>{c.count}</span></button>
 </Fragment>))}
 </div>
-<div role="group" aria-label="Neighbourhood" style={{ display: "flex", gap: "8px", overflowX: "auto", scrollbarWidth: "none", padding: "2px 0" }}>
+<div role="group" aria-label="Neighbourhood" className="chiprow" style={{ display: "flex", gap: "8px", padding: "2px 0" }}>
 {(hoodChips).map((c, _k4) => (<Fragment key={_k4}>
 <button type="button" onClick={c.onClick} aria-pressed={c.pressed} style={{ flexShrink: "0", whiteSpace: "nowrap", minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: `1px solid ${c.border}`, background: c.bg, color: c.fg, fontWeight: "600", fontSize: "13px", cursor: "pointer" }}>{c.label} <span style={{ opacity: ".65" }}>{c.count}</span></button>
 </Fragment>))}

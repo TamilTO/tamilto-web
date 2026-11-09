@@ -13,7 +13,7 @@ export default function HoodView({ raw, nowAt, hoodKey, events }) {
   const l = all.filter((b) => b.neighbourhood === h.key).sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name))
   const bd = focusB(h, 1)
   const hood = { n: h.name, c: h.colour, tag: h.tagline, d: h.description, count: l.length, cats: new Set(l.map((b) => b.category)).size, web: l.filter((b) => b.website).length, allHref: '/directory?hood=' + h.key }
-  const pinList = [...l.slice(0, 300), ...all.filter((b) => b.neighbourhood !== h.key).sort((a, b) => score(b) - score(a)).slice(0, 100)]
+  const pinList = l.slice(0, 400)
   const hoodCfg = { bounds: bd, pins: pinList, sel: null, focus: h.key }
   const hoodPins = pinsFor(bd, pinList).map((p) => ({ ...p, href: p.b.href, aria: `${p.b.name}, ${p.b.catLabel}. ${p.b.status}` }))
   const hoodCats = site.categories.map((c) => ({ label: c.label, c: c.colour, count: l.filter((b) => b.category === c.key).length, href: `/directory?cat=${c.key}&hood=${h.key}` })).filter((c) => c.count)
@@ -27,7 +27,7 @@ export default function HoodView({ raw, nowAt, hoodKey, events }) {
 <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "32px clamp(16px,4vw,32px) 0", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,440px),1fr))", gap: "24px", alignItems: "center" }}>
 <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
 <span style={{ fontSize: "12px", fontWeight: "800", letterSpacing: ".16em", textTransform: "uppercase", color: "var(--mariText)" }}>Neighbourhood world</span>
-<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(60px,10vw,132px)", lineHeight: ".82", letterSpacing: "-.015em" }}>{hood.n}</h1>
+<h1 style={{ margin: "0", fontFamily: "var(--display)", fontWeight: "900", fontSize: "clamp(52px,7.4vw,118px)", lineHeight: ".86", letterSpacing: "-.015em", overflowWrap: "anywhere" }}>{hood.n}</h1>
 <span style={{ width: "120px", height: "8px", borderRadius: "99px", background: hood.c }}></span>
 <strong style={{ fontSize: "22px" }}>{hood.tag}</strong>
 <p style={{ margin: "0", fontSize: "17px", lineHeight: "1.55", color: "var(--ink2)", maxWidth: "560px" }}>{hood.d}</p>
@@ -39,7 +39,7 @@ export default function HoodView({ raw, nowAt, hoodKey, events }) {
 </div>
 </section>
 <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "28px clamp(16px,4vw,32px) 0" }}>
-<div style={{ display: "flex", gap: "8px", overflowX: "auto", scrollbarWidth: "none" }}>
+<div className="chiprow" style={{ display: "flex", gap: "8px", padding: "2px 0" }}>
 {(hoodCats).map((c, _k2) => (<Fragment key={_k2}><A href={c.href} style={{ flexShrink: "0", whiteSpace: "nowrap", minHeight: "42px", display: "inline-flex", alignItems: "center", gap: "8px", padding: "0 14px", borderRadius: "999px", border: "1px solid var(--line2)", background: "var(--glass2)", color: "var(--ink)", fontWeight: "700", fontSize: "14px", textDecoration: "none" }}><span style={{ width: "8px", height: "8px", borderRadius: "99px", background: c.c }}></span>{c.label} <span style={{ opacity: ".6" }}>{c.count}</span></A></Fragment>))}
 </div>
 </section>

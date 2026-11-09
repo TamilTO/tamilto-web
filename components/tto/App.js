@@ -134,7 +134,7 @@ export function Header() {
       <div className="tto-head" style={{ maxWidth: 1320, margin: '0 auto', padding: '0 clamp(12px,3vw,32px)', minHeight: 64, display: 'flex', alignItems: 'center', gap: 10 }}>
         <Link href="/" aria-label="TamilTO home" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'var(--ink)', flexShrink: 0 }}><Wordmark /></Link>
         <span className="tto-head-gap" style={{ flex: 1, display: 'none' }} />
-        <nav aria-label="Main" className="tto-nav" style={{ flex: 1, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', WebkitMaskImage: 'linear-gradient(90deg,#000 calc(100% - 24px),transparent)', maskImage: 'linear-gradient(90deg,#000 calc(100% - 24px),transparent)', paddingRight: 20 }}>
+        <nav aria-label="Main" className="tto-nav" style={{ flex: 1, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', WebkitMaskImage: 'linear-gradient(90deg,#000 calc(100% - 48px),transparent)', maskImage: 'linear-gradient(90deg,#000 calc(100% - 48px),transparent)', paddingRight: 20 }}>
           <div style={{ display: 'flex', gap: 2, width: 'max-content', margin: '0 auto' }}>
             {NAV.map(([label, href, match]) => {
               const on = path === href || match.some((m) => path.startsWith(m))

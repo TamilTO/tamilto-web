@@ -107,6 +107,11 @@ export default function AdminV3() {
     const c = sb()
     // Arriving from a "reset your password" email: show the new-password form, not the admin.
     if (/type=recovery/.test(window.location.hash)) { recovering.current = true; set({ phase: 'recovery' }) }
+    else if (/error_code=/.test(window.location.hash)) {
+      const expired = /otp_expired|expired/i.test(window.location.hash)
+      history.replaceState(null, '', '/admin')
+      set({ phase: 'out', loginErr: expired ? 'That reset link has expired or was already used. Type your email and click “Forgot password?” again. Use the newest email only.' : 'That link didn’t work. Type your email and click “Forgot password?” to get a new one.' })
+    }
     const enter = async (session) => {
       if (recovering.current) return
       if (!session) return set({ phase: 'out' })

@@ -26,7 +26,9 @@ export const viewport = {
 
 // Set theme before paint to avoid a flash.
 // Set theme before paint to avoid a flash. Dark is the TamilTO default; visitors can switch.
-const themeScript = `(function(){try{var t=localStorage.getItem('tto-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}})()`
+// A password-reset or login link from Supabase can land on any page (it uses the Site URL):
+// send it to the admin, which shows the "new password" box.
+const themeScript = `(function(){try{var h=location.hash;if(/(type=recovery|error_code=|type=invite|type=signup|type=magiclink)/.test(h)&&location.pathname.indexOf('/admin')!==0){location.replace('/admin'+h);return}}catch(e){}})();(function(){try{var t=localStorage.getItem('tto-theme')||'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}})()`
 
 export default function RootLayout({ children }) {
   return (

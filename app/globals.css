@@ -389,3 +389,13 @@ h1, h2, h3, p { margin: 0; }
   .tto-nav > div { margin: 0 !important; }
 }
 @media (max-width: 380px) { .tto-head > a[href="/business"] { padding: 0 10px !important; font-size: 12px !important; } }
+
+/* Filter chip rows: wrap onto more lines on wider screens so no chip is ever cut off.
+   On phones they scroll sideways, with a fade at the edge that shows there is more. */
+.chiprow { flex-wrap: wrap; }
+.chiprow > * { flex: 0 0 auto; }
+@media (max-width: 700px) {
+  .chiprow { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 28px !important;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+  .chiprow::-webkit-scrollbar { display: none; }
+}
