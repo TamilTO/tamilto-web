@@ -1,5 +1,6 @@
 import CultureView from '@/components/tto/views/Culture'
 import { getSite, getArticles, getEvents } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 import { CATEGORIES } from '@/lib/site'
 
@@ -10,6 +11,6 @@ export const metadata = pageMeta({ title: 'Culture — Tamil Toronto', descripti
 export default async function CulturePage() {
   const [raw, articles, events] = await Promise.all([getSite(), getArticles({ categories: ['culture', 'people', 'guides', 'business'], limit: 13 }), getEvents()])
   // Only the "Learn it yourself" list needs businesses here.
-  const slim = { ...raw, businesses: raw.businesses.filter((b) => b.category === 'learn') }
+  const slim = packSite(raw, (b) => b.category === 'learn')
   return <CultureView raw={slim} nowAt={Date.now()} articles={articles} events={events} />
 }

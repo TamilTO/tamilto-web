@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import PlanView from '@/components/tto/market/Plan'
 import { getSite, getMarket } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 export const revalidate = 300
@@ -20,5 +21,5 @@ export default async function Page({ params }) {
   const { event } = await params
   const [raw, market] = await Promise.all([getSite(), getMarket()])
   if (!market.eventTypes.some((e) => e.id === event)) notFound()
-  return <PlanView raw={raw} market={market} nowAt={Date.now()} id={event} />
+  return <PlanView raw={packSite(raw)} market={market} nowAt={Date.now()} id={event} />
 }

@@ -1,5 +1,6 @@
 import ForBizView from '@/components/tto/views/ForBiz'
 import { getSite } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
@@ -11,5 +12,5 @@ export const metadata = pageMeta({
 export default async function ForBusiness({ searchParams }) {
   const sp = await searchParams
   const raw = await getSite()
-  return <ForBizView raw={raw} nowAt={Date.now()} claimId={typeof sp.claim === 'string' ? sp.claim : null} />
+  return <ForBizView raw={packSite(raw)} nowAt={Date.now()} claimId={typeof sp.claim === 'string' ? sp.claim : null} />
 }

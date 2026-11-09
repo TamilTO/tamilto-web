@@ -1,6 +1,7 @@
 import DirectoryView from '@/components/tto/views/Directory'
 import { getSite, getMarket } from '@/lib/data'
 import { indexSite, filterFromQuery } from '@/lib/tto'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 const pick = (sp) => Object.fromEntries(['q', 'cat', 'hood', 'web', 'email', 'addr', 'wa', 'view'].filter((k) => sp[k]).map((k) => [k, String(sp[k]).slice(0, 80)]))
@@ -25,5 +26,5 @@ export default async function Directory({ searchParams }) {
   const [raw, market] = await Promise.all([getSite(), getMarket()])
   const site = indexSite(raw)
   const initial = { q: sp.q || '', filter: filterFromQuery(sp, site), view: sp.view === 'map' ? 'map' : 'list' }
-  return <DirectoryView raw={raw} nowAt={Date.now()} initial={initial} sponsors={market.sponsors} />
+  return <DirectoryView raw={packSite(raw)} nowAt={Date.now()} initial={initial} sponsors={market.sponsors} />
 }

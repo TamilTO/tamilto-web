@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import BizView from '@/components/tto/views/Biz'
 import JsonLd from '@/components/JsonLd'
 import { getSite, getBusiness } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta, businessLd, breadcrumbLd } from '@/lib/seo'
 
 export const revalidate = 3600
@@ -42,7 +43,7 @@ export default async function BusinessPage({ params }) {
   const { b, raw, cat, hood } = d
   return (
     <>
-      <BizView raw={raw} nowAt={Date.now()} id={b.id} />
+      <BizView raw={packSite(raw, (x) => x.neighbourhood === b.neighbourhood || x.category === b.category)} nowAt={Date.now()} id={b.id} />
       <JsonLd data={[businessLd(b, { categoryLabel: cat?.label, areaName: hood?.name }), breadcrumbLd([{ name: 'Directory', path: '/directory' }, { name: cat?.label || 'Business', path: `/directory?cat=${b.category}` }, { name: b.name, path: `/b/${b.id}` }])]} />
     </>
   )

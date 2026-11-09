@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import HoodView from '@/components/tto/views/Hood'
 import { getSite, getEvents } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 export const revalidate = 3600
@@ -21,5 +22,5 @@ export default async function HoodPage({ params }) {
   const { hood } = await params
   const [raw, events] = await Promise.all([getSite(), getEvents()])
   if (!raw.neighbourhoods.some((h) => h.key === hood)) notFound()
-  return <HoodView raw={raw} nowAt={Date.now()} hoodKey={hood} events={events} />
+  return <HoodView raw={packSite(raw)} nowAt={Date.now()} hoodKey={hood} events={events} />
 }

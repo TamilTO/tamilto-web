@@ -1,5 +1,6 @@
 import PlanView from '@/components/tto/market/Plan'
 import { getSite, getMarket } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 export const revalidate = 300
@@ -7,5 +8,5 @@ export const metadata = pageMeta({ title: 'Plan a Tamil event in Toronto', descr
 
 export default async function Page() {
   const [raw, market] = await Promise.all([getSite(), getMarket()])
-  return <PlanView raw={raw} market={market} nowAt={Date.now()} />
+  return <PlanView raw={packSite(raw)} market={market} nowAt={Date.now()} />
 }

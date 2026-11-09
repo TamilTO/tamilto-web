@@ -33,9 +33,11 @@ export default function HomeView({ raw, nowAt, events: rawEvents, eat, culture, 
   const askSubmit = (e) => { e.preventDefault(); go((askDraft || '').trim() || EX[ph % EX.length]) }
   const examples = EX.slice(0, 4).map((q) => ({ label: q, onClick: () => go(q) }))
 
-  const heroCfg = { bounds: FULL, pins: all, threads: true, sel: hover }
+  // The hero map shows the 400 best-known businesses; the full map is on the Directory.
+  const pinList = useMemo(() => [...all].sort((a, b) => score(b) - score(a)).slice(0, 400), [all])
+  const heroCfg = { bounds: FULL, pins: pinList, threads: true, sel: hover }
   const heroHoods = hoodLabelsFor(FULL, site.neighbourhoods)
-  const heroPins = pinsFor(FULL, all).map((p) => ({ ...p, href: p.b.href, aria: `${p.b.name}, ${p.b.catLabel}, ${p.b.hoodName}. ${p.b.status}`, hover: () => setHover(p.b.id) }))
+  const heroPins = pinsFor(FULL, pinList).map((p) => ({ ...p, href: p.b.href, aria: `${p.b.name}, ${p.b.catLabel}, ${p.b.hoodName}. ${p.b.status}`, hover: () => setHover(p.b.id) }))
   const unhover = () => setHover(null)
   let tip = { show: false }
   const hb = hover && byId[hover]

@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import VertView from '@/components/tto/market/Vert'
 import { getSite, getMarket } from '@/lib/data'
+import { packSite } from '@/lib/pack.mjs'
 import { pageMeta } from '@/lib/seo'
 
 export const revalidate = 300
@@ -21,5 +22,5 @@ export default async function Page({ params }) {
   if (id === 'weddings') redirect('/plan/wedding')
   const [raw, market] = await Promise.all([getSite(), getMarket()])
   if (!market.verticals.some((v) => v.id === id)) notFound()
-  return <VertView raw={raw} market={market} nowAt={Date.now()} id={id} />
+  return <VertView raw={packSite(raw)} market={market} nowAt={Date.now()} id={id} />
 }

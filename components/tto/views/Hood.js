@@ -13,8 +13,9 @@ export default function HoodView({ raw, nowAt, hoodKey, events }) {
   const l = all.filter((b) => b.neighbourhood === h.key).sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name))
   const bd = focusB(h, 1)
   const hood = { n: h.name, c: h.colour, tag: h.tagline, d: h.description, count: l.length, cats: new Set(l.map((b) => b.category)).size, web: l.filter((b) => b.website).length, allHref: '/directory?hood=' + h.key }
-  const hoodCfg = { bounds: bd, pins: all, sel: null, focus: h.key }
-  const hoodPins = pinsFor(bd, all).map((p) => ({ ...p, href: p.b.href, aria: `${p.b.name}, ${p.b.catLabel}. ${p.b.status}` }))
+  const pinList = [...l.slice(0, 300), ...all.filter((b) => b.neighbourhood !== h.key).sort((a, b) => score(b) - score(a)).slice(0, 100)]
+  const hoodCfg = { bounds: bd, pins: pinList, sel: null, focus: h.key }
+  const hoodPins = pinsFor(bd, pinList).map((p) => ({ ...p, href: p.b.href, aria: `${p.b.name}, ${p.b.catLabel}. ${p.b.status}` }))
   const hoodCats = site.categories.map((c) => ({ label: c.label, c: c.colour, count: l.filter((b) => b.category === c.key).length, href: `/directory?cat=${c.key}&hood=${h.key}` })).filter((c) => c.count)
   const hoodBiz = l.slice(0, 24)
   const hoodEvents = useMemo(() => events.filter((e) => e.hood === h.key).map((e) => eventCard(e, site.hoodByKey)), [events, h, site])

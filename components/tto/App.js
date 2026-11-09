@@ -2,6 +2,7 @@
 // The TamilTO frame: header, footer, background, shortlist drawer, quote requests,
 // Stories viewer and toasts, plus the visitor's saved state (kept in their browser).
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, Fragment } from 'react'
+import { unpackIndex } from '@/lib/pack.mjs'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Background } from './canvas'
@@ -23,7 +24,14 @@ export function track(kind, businessId = '', extra = '', ref = '') {
   } catch {}
 }
 
-export function AppProvider({ index, children }) {
+export function AppProvider({ children }) {
+  // Every live business in short form, fetched once after the page loads (keeps pages small).
+  const [index, setIndex] = useState([])
+  useEffect(() => {
+    let on = true
+    fetch('/api/site-index').then((r) => (r.ok ? r.json() : [])).then((rows) => on && setIndex(unpackIndex(rows))).catch(() => {})
+    return () => { on = false }
+  }, [])
   const byId = useMemo(() => Object.fromEntries(index.map((b) => [b.id, b])), [index])
   const [theme, setThemeS] = useState('dark')
   const [saved, setSaved] = useState([])
@@ -359,9 +367,9 @@ function Toast() {
   return <div role="status" style={{ position: 'fixed', left: '50%', bottom: 24, transform: 'translateX(-50%)', zIndex: 95, background: 'var(--ink)', color: 'var(--bg)', padding: '12px 20px', borderRadius: 999, fontWeight: 800, fontSize: 15, maxWidth: 'calc(100% - 32px)', textAlign: 'center', boxShadow: 'var(--shadow)' }}>{toast}</div>
 }
 
-export function Frame({ index, children }) {
+export function Frame({ children }) {
   return (
-    <AppProvider index={index}>
+    <AppProvider>
       <Background />
       <div className="tto-frame">
         <a href="#main" className="skip">Skip to content</a>

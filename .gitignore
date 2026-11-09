@@ -12,3 +12,7 @@ Thumbs.db
 
 # GitHub Desktop once made an empty copy of this folder inside itself; never upload it.
 /tamilto-web/
+
+# Raw scraped copies of the directory (contact details). The site only needs the 02-businesses-part files.
+/supabase/TamilTO_Business_Directory.sql
+/supabase/vanakkam_listings_raw.json

@@ -367,7 +367,7 @@ export default function AdminV3() {
       title: b.name, sub: [catOf(b.category_key).label, b.city || hoodOf(b.neighbourhood_key).name, b.address, fmtPhone(b.phone || b.cell)].filter(Boolean).join(' · '), c: catOf(b.category_key).colour,
       thumb: b.photos[0]?.storage_path || null,
       badges: [b.is_featured && { l: 'Featured', c: '#F5B83D' }, b.is_verified && { l: 'Verified', c: 'var(--teal)' }, b.deal && { l: 'Deal', c: 'var(--red)' }, b.jobs?.length && { l: 'Hiring', c: 'var(--green)' },
-        b.photos.length < MINPH && { l: `Needs photos (${b.photos.length}/${MINPH})`, c: 'var(--red)' }, Object.keys(b.social || {}).length && { l: 'Social', c: '#E1306C' }, b.google_maps_url && { l: 'Google', c: '#4285F4' }, b.is_hidden && { l: 'Hidden', c: 'var(--ink2)' }],
+        b.photos.length < MINPH && { l: `Photos ${b.photos.length}/${MINPH}`, c: '#F5B83D' }, Object.keys(b.social || {}).length && { l: 'Social', c: '#E1306C' }, b.google_maps_url && { l: 'Google', c: '#4285F4' }, b.is_hidden && { l: 'Hidden', c: 'var(--ink2)' }],
       edit: () => openEdit('biz', b), view: b.is_hidden ? '' : '/b/' + b.slug, hidden: b.is_hidden,
       del: remove(b.name, async () => { await run(sb().from('businesses').delete().eq('id', b.id)); await removeFiles(b.photos.map((x) => x.storage_path)) }, ['biz', 'colls', 'journeys']),
     }))
@@ -938,7 +938,7 @@ export default function AdminV3() {
       f('speaks_tamil', 'Speaks Tamil', 'check')
       f('slug', 'Web address', 'text', { full: true, ph: slugify(d.name), hint: `tamilto.com/b/${d.slug || slugify(d.name) || '…'}${isNew ? '' : ' · changing it breaks old links'}` })
       f('is_hidden', 'Hidden from the site', 'check')
-      if (!d.is_hidden && d.photos.length < MINPH) note(`To be live it needs at least ${MINPH} photos. Add ${MINPH - d.photos.length} more, or tick “Hidden from the site”.`)
+      if (d.photos.length < MINPH) note(`Listings look best with ${MINPH}+ photos (storefront, inside, what they sell). It can be live without them.`)
     } else if (type === 'event') {
       f('title', 'Event title', 'text', { full: true, req: true })
       f('type', 'Type', 'select:evtype')
@@ -1076,14 +1076,14 @@ export default function AdminV3() {
     if (PH) {
       const ph = d.photos || []
       const max = type === 'article' ? 1 : 30
-      v.photoLabel = isB ? 'Photos *' : type === 'article' ? 'Main photo' : 'Photos'
+      v.photoLabel = isB ? 'Photos' : type === 'article' ? 'Main photo' : 'Photos'
       v.photoHint = isB ? 'The first photo is the cover. Storefront, inside, and what they sell work best. Only use photos the owner gave you or that you took.' : type === 'event' ? 'The first photo is the event card image. Posters and venue shots work well.' : 'Shown at the top of the story and on its card. Wide photos work best.'
       v.photos = ph.map((p, i) => ({
         n: i + 1, bg: bg(p.path), cover: i === 0, notCover: i !== 0, border: i === 0 ? '#F5B83D' : 'transparent',
         remove: () => setDraft({ photos: ph.filter((x) => x !== p) }), makeCover: () => setDraft({ photos: [p, ...ph.filter((x) => x !== p)] }),
       }))
-      v.photoCount = isB ? `${ph.length} added · minimum ${MINPH}` : `${ph.length} added · ${type === 'article' ? 'one photo' : 'optional'}`
-      v.photoColor = !isB || ph.length >= MINPH ? 'var(--green)' : 'var(--red)'
+      v.photoCount = isB ? `${ph.length} added · ${MINPH}+ recommended` : `${ph.length} added · ${type === 'article' ? 'one photo' : 'optional'}`
+      v.photoColor = !isB || ph.length >= MINPH ? 'var(--green)' : '#F5B83D'
       v.uploading = !!edit.uploading
       v.notUploading = !edit.uploading
       v.onFiles = async (e) => {
@@ -1175,7 +1175,6 @@ export default function AdminV3() {
         need(!d.email || /^\S+@\S+\.\S+$/.test(d.email), 'That email doesn’t look right.')
         need(d.lat === '' || d.lat === null || (+d.lat >= 40 && +d.lat <= 50), 'Latitude should be about 43.')
         need(d.lng === '' || d.lng === null || (+d.lng >= -85 && +d.lng <= -75), 'Longitude should be about -79.')
-        need(d.is_hidden || d.photos.length >= MINPH, `Add at least ${MINPH} photos before it goes live, or tick “Hidden from the site”.`)
         const slug = slugify(d.slug || d.name)
         need(slug, 'The web address can’t be empty.')
         const row = {
