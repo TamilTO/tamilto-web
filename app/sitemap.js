@@ -13,6 +13,7 @@ export default async function sitemap() {
     { url: u('/events'), changeFrequency: 'daily', priority: 0.8 },
     ...sections.map((k) => ({ url: u(`/${k}`), changeFrequency: 'daily', priority: 0.7 })),
     ...['/plan', '/requests', '/jobs', '/classifieds', '/deals', '/awards'].map((p) => ({ url: u(p), changeFrequency: 'daily', priority: 0.7 })),
+    ...['/updates'].map((p) => ({ url: u(p), changeFrequency: 'hourly', priority: 0.6 })),
     ...['/creators', '/partners', '/more'].map((p) => ({ url: u(p), changeFrequency: 'weekly', priority: 0.5 })),
     ...market.eventTypes.map((e) => ({ url: u(`/plan/${e.id}`), changeFrequency: 'weekly', priority: 0.6 })),
     ...market.verticals.filter((v) => v.id !== 'weddings').map((v) => ({ url: u(`/v/${v.id}`), changeFrequency: 'weekly', priority: 0.6 })),

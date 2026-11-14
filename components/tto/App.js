@@ -9,6 +9,7 @@ import { Background } from './canvas'
 import { openStatus, enc } from '@/lib/tto'
 import { track as plausible } from '@/lib/client'
 import { CookiePrefsButton } from '@/components/ConsentBanner'
+import Ticker from './Ticker'
 
 const Ctx = createContext(null)
 export const useApp = () => useContext(Ctx)
@@ -156,6 +157,7 @@ export function Header() {
           )}
         </button>
       </div>
+      <Ticker />
     </header>
   )
 }
